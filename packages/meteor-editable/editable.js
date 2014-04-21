@@ -8,23 +8,60 @@ m_editable.helpers({
 });
 
 m_editable.events({
-    'click span': function (e, tmpl) {
-        var currentSetting = tmpl.Session.get('popover-visible');
-        tmpl.Session.set('popover-visible', !currentSetting);
-    }
+    'click .popover-handle': function (e, tmpl) {
+        e.stopPropagation();
+        tmpl.Session.set( 'popover-visible', !tmpl.Session.get('popover-visible') );
+    },
+    'hide .popover': function (e, tmpl) { tmpl.Session.set('popover-visible', false); },
+    'show .popover': function (e, tmpl) { tmpl.Session.set('popover-visible', true); }
 });
 
 m_editable.rendered = function () {
     var self = this;
+    var $popover = self.$('.popover');
     self.Deps.autorun(function () {
         if (self.Session.get('popover-visible')) {
-            self.$('.popover').fadeIn();
+            $popover.trigger('show');
+            $popover.fadeIn();
+            $popover.trigger('shown');
+
+
+            var placement = self.data.position,
+                actualWidth = $popover[0].offsetWidth,
+                actualHeight = $popover[0].offsetHeight,
+                pos = $.fn.tooltip.Constructor.prototype.getPosition.call({ $element: $popover.siblings('.popover-handle') });
+            var calculatedOffset = $.fn.tooltip.Constructor.prototype.getCalculatedOffset(placement, pos, actualWidth, actualHeight);
+
+            $.fn.tooltip.Constructor.prototype.applyPlacement.call({
+                tip: function () {
+                    return $popover;
+                },
+                replaceArrow: function (delta, dimension, position) {
+                    $popover.find('.arrow').css(position, delta ? (50 * (1 - delta / dimension) + '%') : '')
+                }
+            }, calculatedOffset, placement);
+
         } else {
-            self.$('.popover').fadeOut();
+            $popover.trigger('hide');
+            $popover.fadeOut();
+            $popover.trigger('hidden');
         }
     });
 };
 
+Meteor.startup(function () {
+    $(document).on('click.m_editable-popover-close', function (e) {
+        $('.popover:visible').each(function () {
+            var $popover = $(this);
+            if (!$popover.is(e.target) &&
+                !$popover.siblings('.popover-handle').is(e.target) &&
+                $popover.has(e.target).length === 0 &&
+                $popover.siblings('.popover-handle').has(e.target).length === 0) {
+                $popover.trigger('hide');
+            }
+        });
+    });
+});
 
 // Session & Deps stuff
 m_editable.destroyed = function () { this.Session.destroyAll(); this.Deps.stopAll(); };

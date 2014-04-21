@@ -1,10 +1,10 @@
 <template name="m_editable">
-    <span>{{text}}</span>
+    <a href="#" id="username" data-type="text" data-pk="1" data-title="Enter username" class="editable popover-handle editable-click editable-open" data-original-title="" title="">{{text}}</a>
     {{> popover_edit}}
 </template>
 
 <template name="m_editable_text">
-    <div class="popover" style="left: -200px;">
+    <div class="popover {{position}} editable-popup">
         <div class="arrow"></div>
         <h3 class="popover-title">Title</h3>
         <div class="popover-content">Content</div>
