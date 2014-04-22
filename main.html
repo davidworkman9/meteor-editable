@@ -10,10 +10,11 @@
     <div class="container">
         <div class="col-xs-2 col-xs-offset-5" style="margin-top: 200px;">
             <span>{{> m_editable
-                text="superuser"
+                value=text
                 position="top"
                 title="Enter username"
                 showbuttons=true
+                async=true
                 onsubmit=onsubmission
             }}</span>
         </div>

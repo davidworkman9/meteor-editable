@@ -2,28 +2,41 @@ var m_editable = Template['m_editable'],
     text_popover = Template['m_editable_text'];
 
 m_editable.helpers({
+    'editableEmpty': function () {
+        return !!this.value ? '' : 'editable-empty';
+    },
+    'settings': function () {
+        return _.extend({
+            emptyText: 'Empty'
+        }, this);
+    },
     'popover_edit': function () {
         return text_popover;
+    },
+    'value': function () {
+       return this.value || this.emptyText;
     }
-});
-
-text_popover.helpers({
-    'loading': function (a,b) {
-        // can't get tmpl in this context..
+//     can't get tmpl in this context else I'd do this:
+//    'loading': function (a,b) {
 //        return tmpl.Session.get('loading');
-    }
+//    }
 });
 
 m_editable.events({
-    'click .editable-submit': function (e, tmpl) {
+    'submit': function (e, tmpl) {
+        var self = this;
         tmpl.Session.set('loading', true);
-        if (typeof this.onsubmit === 'function') {
-            this.onsubmit.call(this, tmpl.$('form').serializeArray(), function () {
-                tmpl.$('.popover').trigger('hide');
-            });
-        } else {
-            tmpl.$('.popover').trigger('hide');
+        if (self.async) {
+            if (typeof self.onsubmit === 'function') {
+                this.onsubmit.call(this, tmpl.$('input').val(), function () {
+                    tmpl.$('.popover').trigger('hide');
+                });
+                return;
+            } else {
+                this.onsubmit.call(this, tmpl.$('input').val());
+            }
         }
+        tmpl.$('.popover').trigger('hide');
     },
     'click .editable-cancel': function (e, tmpl) {
         tmpl.$('.popover').trigger('hide');
@@ -45,9 +58,10 @@ m_editable.events({
         }
 
         tmpl.Session.set('popover-visible', false);
+
         setTimeout(function () {
             $(e.target).trigger('hidden');
-        }, 0);
+        }, 325); // 325 seems to be the magic number (for my desktop at least) so the user doesn't see the form show up again
     },
     'show .popover': function (e, tmpl) {
         if (tmpl.Session.equals('popover-visible', true)) {
@@ -65,15 +79,29 @@ m_editable.rendered = function () {
     var self = this;
     var $popover = self.$('.popover');
     self.Deps.autorun(function () {
-        if (typeof self.Session.get('popover-visible') === 'undefined') {
+        var loading = self.Session.get('loading');
+
+        if (loading) {
+            self.$('.editableform').hide();
+            self.$('.editableform-loading').show();
+        } else {
+            self.$('.editableform-loading').hide();
+            self.$('.editableform').show();
+        }
+    });
+
+    self.Deps.autorun(function () {
+        var visible = self.Session.get('popover-visible');
+        self.Session.get('loading'); // changes the form size, so need to re-calculate location
+        if (typeof visible === 'undefined') {
             return;
         }
 
-        if (self.Session.get('popover-visible')) {
+        if (visible) {
             $popover.trigger('show');
             $popover.fadeIn();
 
-            var placement = self.data.position,
+            var placement = 'top',
                 actualWidth = $popover[0].offsetWidth,
                 actualHeight = $popover[0].offsetHeight,
                 pos = $.fn.tooltip.Constructor.prototype.getPosition.call({ $element: $popover.siblings('.popover-handle') });
@@ -115,19 +143,19 @@ m_editable.created = function () {
         autorun: function (f) { this._handles.push(Deps.autorun(f)); }
     };
 
-    self.sessId = Random.id();
+    self._sessId = Random.id();
     self.Session = {
         destroyAll: function () {
             _.each(Object.keys(Session.keys), function (key) {
-                var sessCheck = new RegExp('-' + self.sessId + '$');
+                var sessCheck = new RegExp('-' + self._sessId + '$');
                 if(sessCheck.test(key)) {
                     Session.set([key]);
                     delete Session.keys[key];
                 }
             });
         },
-        set: function (key, val) { return Session.set(key + '-' + self.sessId, val); },
-        get: function (key) { return Session.get(key + '-' + self.sessId); },
-        equals: function (key, val) { return Session.equals(key + '-' + self.sessId, val); }
+        set: function (key, val) { return Session.set(key + '-' + self._sessId, val); },
+        get: function (key) { return Session.get(key + '-' + self._sessId); },
+        equals: function (key, val) { return Session.equals(key + '-' + self._sessId, val); }
     };
 };
