@@ -6,9 +6,7 @@ m_editable.helpers({
         return !!this.value ? '' : 'editable-empty';
     },
     'settings': function () {
-        return _.extend({
-            emptyText: 'Empty'
-        }, this);
+        return generateSettings(this);
     },
     'popover_edit': function () {
         return text_popover;
@@ -25,16 +23,16 @@ m_editable.helpers({
 m_editable.events({
     'submit': function (e, tmpl) {
         var self = this;
-        tmpl.Session.set('loading', true);
-        if (self.async) {
-            if (typeof self.onsubmit === 'function') {
+
+        if (typeof self.onsubmit === 'function') {
+            if (self.async) {
+                tmpl.Session.set('loading', true);
                 this.onsubmit.call(this, tmpl.$('input').val(), function () {
                     tmpl.$('.popover').trigger('hide');
                 });
                 return;
-            } else {
-                this.onsubmit.call(this, tmpl.$('input').val());
             }
+            this.onsubmit.call(this, tmpl.$('input').val());
         }
         tmpl.$('.popover').trigger('hide');
     },
@@ -78,6 +76,9 @@ m_editable.events({
 m_editable.rendered = function () {
     var self = this;
     var $popover = self.$('.popover');
+
+    self.Session.set('settings', generateSettings(self.data));
+
     self.Deps.autorun(function () {
         var loading = self.Session.get('loading');
 
@@ -93,6 +94,7 @@ m_editable.rendered = function () {
     self.Deps.autorun(function () {
         var visible = self.Session.get('popover-visible');
         self.Session.get('loading'); // changes the form size, so need to re-calculate location
+        var settings = self.Session.get('settings');
         if (typeof visible === 'undefined') {
             return;
         }
@@ -101,7 +103,7 @@ m_editable.rendered = function () {
             $popover.trigger('show');
             $popover.fadeIn();
 
-            var placement = 'top',
+            var placement = self.data.position,
                 actualWidth = $popover[0].offsetWidth,
                 actualHeight = $popover[0].offsetHeight,
                 pos = $.fn.tooltip.Constructor.prototype.getPosition.call({ $element: $popover.siblings('.popover-handle') });
@@ -131,6 +133,18 @@ Meteor.startup(function () {
         });
     });
 });
+
+function generateSettings (settings) {
+    return _.extend({
+        emptyText: 'Empty',
+        async: false,
+        showbuttons: true,
+        onsubmit: null,
+        value: null,
+        position: 'left',
+        title: ''
+    }, settings);
+}
 
 // Session & Deps stuff
 m_editable.destroyed = function () { this.Session.destroyAll(); this.Deps.stopAll(); };
