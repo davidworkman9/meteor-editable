@@ -8,6 +8,9 @@ m_editable.helpers({
 });
 
 m_editable.events({
+    'submit .editableform': function (e, tmpl) {
+        e.preventDefault();
+    },
     'click .popover-handle': function (e, tmpl) {
         e.stopPropagation();
         tmpl.Session.set( 'popover-visible', !tmpl.Session.get('popover-visible') );
@@ -25,7 +28,6 @@ m_editable.rendered = function () {
             $popover.fadeIn();
             $popover.trigger('shown');
 
-
             var placement = self.data.position,
                 actualWidth = $popover[0].offsetWidth,
                 actualHeight = $popover[0].offsetHeight,
@@ -33,12 +35,8 @@ m_editable.rendered = function () {
             var calculatedOffset = $.fn.tooltip.Constructor.prototype.getCalculatedOffset(placement, pos, actualWidth, actualHeight);
 
             $.fn.tooltip.Constructor.prototype.applyPlacement.call({
-                tip: function () {
-                    return $popover;
-                },
-                replaceArrow: function (delta, dimension, position) {
-                    $popover.find('.arrow').css(position, delta ? (50 * (1 - delta / dimension) + '%') : '')
-                }
+                tip: function () { return $popover; },
+                replaceArrow: function (delta, dimension, position) { $popover.find('.arrow').css(position, delta ? (50 * (1 - delta / dimension) + '%') : ''); }
             }, calculatedOffset, placement);
 
         } else {

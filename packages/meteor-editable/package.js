@@ -5,5 +5,5 @@ Package.describe({
 Package.on_use(function (api) {
     api.use(['templating'], 'client');
 
-    api.add_files(['editable.html', 'editable.js'], 'client');
+    api.add_files(['editable.html', 'bootstrap-editable.css', 'editable.js'], 'client');
 });

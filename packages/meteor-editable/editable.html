@@ -1,12 +1,42 @@
 <template name="m_editable">
-    <a href="#" id="username" data-type="text" data-pk="1" data-title="Enter username" class="editable popover-handle editable-click editable-open" data-original-title="" title="">{{text}}</a>
+    <a href="#" id="username" class="popover-handle">{{text}}</a>
     {{> popover_edit}}
 </template>
 
 <template name="m_editable_text">
-    <div class="popover {{position}} editable-popup">
+    <div class="popover {{position}} editable-popup editable-container">
         <div class="arrow"></div>
-        <h3 class="popover-title">Title</h3>
-        <div class="popover-content">Content</div>
+        {{#if title}}
+            <h3 class="popover-title">{{title}}</h3>
+        {{/if}}
+        <div class="popover-content">
+            <div>
+                <div class="editableform-loading" style="display: none;"></div>
+                <form class="form-inline editableform" style="">
+                    <div class="control-group form-group">
+                        <div>
+                            <div class="editable-input" style="position: relative;">
+                                <input type="text" class="form-control input-sm" style="padding-right: 24px;">
+                                <span class="editable-clear-x" style="display: none;"></span></div>
+                            <div class="editable-buttons">
+                                <button type="submit" class="btn btn-primary btn-sm editable-submit">
+                                    <i class="glyphicon glyphicon-ok"></i>
+                                </button>
+                                <button type="button" class="btn btn-default btn-sm editable-cancel">
+                                    <i class="glyphicon glyphicon-remove"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="editable-error-block help-block" style="display: none;"></div>
+                    </div>
+                </form>
+            </div>
+            {{#unless loading}}
+            {{else}}
+                <div class="editableform-loading">
+                    Loading...
+                </div>
+            {{/unless}}
+        </div>
     </div>
 </template>
