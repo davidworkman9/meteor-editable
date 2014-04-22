@@ -10,28 +10,31 @@
             <h3 class="popover-title">{{title}}</h3>
         {{/if}}
         <div class="popover-content">
-            <div>
-                <div class="editableform-loading" style="display: none;"></div>
-                <form class="form-inline editableform" style="">
-                    <div class="control-group form-group">
-                        <div>
-                            <div class="editable-input" style="position: relative;">
-                                <input type="text" class="form-control input-sm" style="padding-right: 24px;">
-                                <span class="editable-clear-x" style="display: none;"></span></div>
-                            <div class="editable-buttons">
-                                <button type="submit" class="btn btn-primary btn-sm editable-submit">
-                                    <i class="glyphicon glyphicon-ok"></i>
-                                </button>
-                                <button type="button" class="btn btn-default btn-sm editable-cancel">
-                                    <i class="glyphicon glyphicon-remove"></i>
-                                </button>
-                            </div>
-                        </div>
-                        <div class="editable-error-block help-block" style="display: none;"></div>
-                    </div>
-                </form>
-            </div>
             {{#unless loading}}
+                <div>
+                    <div class="editableform-loading" style="display: none;"></div>
+                    <form class="form-inline editableform" style="">
+                        <div class="control-group form-group">
+                            <div>
+                                <div class="editable-input" style="position: relative;">
+                                    <input type="text" class="form-control input-sm" style="padding-right: 24px;">
+                                    <span class="editable-clear-x" style="display: none;"></span>
+                                </div>
+                                {{#if showbuttons}}
+                                    <div class="editable-buttons">
+                                        <button type="submit" class="btn btn-primary btn-sm editable-submit">
+                                            <i class="glyphicon glyphicon-ok"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-default btn-sm editable-cancel">
+                                            <i class="glyphicon glyphicon-remove"></i>
+                                        </button>
+                                    </div>
+                                {{/if}}
+                            </div>
+                            <div class="editable-error-block help-block" style="display: none;"></div>
+                        </div>
+                    </form>
+                </div>
             {{else}}
                 <div class="editableform-loading">
                     Loading...

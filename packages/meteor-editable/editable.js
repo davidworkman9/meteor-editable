@@ -7,26 +7,71 @@ m_editable.helpers({
     }
 });
 
+text_popover.helpers({
+    'loading': function (a,b) {
+        // can't get tmpl in this context..
+//        return tmpl.Session.get('loading');
+    }
+});
+
 m_editable.events({
-    'submit .editableform': function (e, tmpl) {
+    'click .editable-submit': function (e, tmpl) {
+        tmpl.Session.set('loading', true);
+        if (typeof this.onsubmit === 'function') {
+            this.onsubmit.call(this, tmpl.$('form').serializeArray(), function () {
+                tmpl.$('.popover').trigger('hide');
+            });
+        } else {
+            tmpl.$('.popover').trigger('hide');
+        }
+    },
+    'click .editable-cancel': function (e, tmpl) {
+        tmpl.$('.popover').trigger('hide');
+    },
+    'submit .editableform': function (e) {
         e.preventDefault();
     },
     'click .popover-handle': function (e, tmpl) {
         e.stopPropagation();
-        tmpl.Session.set( 'popover-visible', !tmpl.Session.get('popover-visible') );
+        tmpl.$('.popover').trigger(!tmpl.Session.get('popover-visible') ? 'show' : 'hide');
     },
-    'hide .popover': function (e, tmpl) { tmpl.Session.set('popover-visible', false); },
-    'show .popover': function (e, tmpl) { tmpl.Session.set('popover-visible', true); }
+    'hidden .popover': function (e, tmpl) {
+        tmpl.Session.set('loading', false);
+    },
+    'hide .popover': function (e, tmpl) {
+        if (tmpl.Session.equals('popover-visible', false)) {
+            e.stopImmediatePropagation();
+            return;
+        }
+
+        tmpl.Session.set('popover-visible', false);
+        setTimeout(function () {
+            $(e.target).trigger('hidden');
+        }, 0);
+    },
+    'show .popover': function (e, tmpl) {
+        if (tmpl.Session.equals('popover-visible', true)) {
+            e.stopImmediatePropagation();
+            return;
+        }
+        tmpl.Session.set('popover-visible', true);
+        setTimeout(function () {
+            $(e.target).trigger('shown');
+        }, 0);
+    }
 });
 
 m_editable.rendered = function () {
     var self = this;
     var $popover = self.$('.popover');
     self.Deps.autorun(function () {
+        if (typeof self.Session.get('popover-visible') === 'undefined') {
+            return;
+        }
+
         if (self.Session.get('popover-visible')) {
             $popover.trigger('show');
             $popover.fadeIn();
-            $popover.trigger('shown');
 
             var placement = self.data.position,
                 actualWidth = $popover[0].offsetWidth,
@@ -38,11 +83,9 @@ m_editable.rendered = function () {
                 tip: function () { return $popover; },
                 replaceArrow: function (delta, dimension, position) { $popover.find('.arrow').css(position, delta ? (50 * (1 - delta / dimension) + '%') : ''); }
             }, calculatedOffset, placement);
-
         } else {
             $popover.trigger('hide');
             $popover.fadeOut();
-            $popover.trigger('hidden');
         }
     });
 };
