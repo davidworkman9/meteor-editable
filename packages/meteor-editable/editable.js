@@ -29,12 +29,31 @@ m_editable.events({
                 tmpl.Session.set('loading', true);
                 this.onsubmit.call(this, tmpl.$('input').val(), function () {
                     tmpl.$('.popover').trigger('hide');
+                    doSavedTransition();
                 });
                 return;
             }
             this.onsubmit.call(this, tmpl.$('input').val());
         }
         tmpl.$('.popover').trigger('hide');
+        doSavedTransition();
+
+        function doSavedTransition () {
+            var $e = tmpl.$('.popover-handle'),
+                bgColor = $e.css('background-color');
+
+            $e.css('background-color', '#FFFF80');
+            setTimeout(function(){
+                if(bgColor === 'transparent') {
+                    bgColor = '';
+                }
+                $e.css('background-color', bgColor);
+                $e.addClass('editable-bg-transition');
+                setTimeout(function(){
+                    $e.removeClass('editable-bg-transition');
+                }, 1700);
+            }, 10);
+        }
     },
     'click .editable-cancel': function (e, tmpl) {
         tmpl.$('.popover').trigger('hide');
@@ -48,6 +67,9 @@ m_editable.events({
     },
     'hidden .popover': function (e, tmpl) {
         tmpl.Session.set('loading', false);
+    },
+    'shown .popover': function (e, tmpl) {
+        tmpl.$('.editable-focus').first().focus();
     },
     'hide .popover': function (e, tmpl) {
         if (tmpl.Session.equals('popover-visible', false)) {
@@ -81,6 +103,8 @@ m_editable.rendered = function () {
 
     self.Deps.autorun(function () {
         var loading = self.Session.get('loading');
+        if (typeof loading === 'undefined')
+            return;
 
         if (loading) {
             self.$('.editableform').hide();

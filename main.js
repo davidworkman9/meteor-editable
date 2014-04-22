@@ -8,12 +8,8 @@ if (Meteor.isClient) {
         return Session.get('poss');
     };
     Template.main.onsubmission = function () {
-        return function (value, cb) {
-            // simulate server latency
-            setTimeout(function () {
-                Session.set('text', value);
-                cb();
-            }, 1250);
+        return function (value) {
+            Session.set('text', value);
         }
     };
 }
