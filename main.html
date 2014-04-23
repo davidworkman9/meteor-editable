@@ -9,13 +9,16 @@
 <template name="main">
     <div class="container">
         <div class="col-xs-2 col-xs-offset-5" style="margin-top: 200px;">
-            <span>{{> m_editable
-                value=text
-                position=poss
-                title="Enter username"
-                showbuttons=true
-                onsubmit=onsubmission
-            }}</span>
+            <span>
+                {{> m_editable
+                    type="textarea"
+                    value=text
+                    position=poss
+                    showbuttons=true
+                    onsubmit=onsubmission
+                    placeholder="some comments please"
+                }}
+            </span>
         </div>
     </div>
 </template>

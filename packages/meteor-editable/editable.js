@@ -1,19 +1,11 @@
-var m_editable = Template['m_editable'],
-    text_popover = Template['m_editable_text'];
+var m_editable = Template['m_editable_main'];
+var POSSIBLE_POSITIONS = ['left', 'right', 'top', 'bottom'];
+Template.m_editable.helpers({ 'settings': function () { return generateSettings(this); } });
 
 m_editable.helpers({
-    'editableEmpty': function () {
-        return !!this.value ? '' : 'editable-empty';
-    },
-    'settings': function () {
-        return generateSettings(this);
-    },
-    'popover_edit': function () {
-        return text_popover;
-    },
-    'value': function () {
-       return this.value || this.emptyText;
-    }
+    'value':         function () { return this.value || this.emptyText; },
+    'editableEmpty': function () { return !this.value ? 'editable-empty' : '';},
+    'inputTemplate': function () { return Template['m_editable_form_' + this.type]; }
 //     can't get tmpl in this context else I'd do this:
 //    'loading': function (a,b) {
 //        return tmpl.Session.get('loading');
@@ -29,31 +21,14 @@ m_editable.events({
                 tmpl.Session.set('loading', true);
                 this.onsubmit.call(this, tmpl.$('input').val(), function () {
                     tmpl.$('.popover').trigger('hide');
-                    doSavedTransition();
+                    doSavedTransition(tmpl);
                 });
                 return;
             }
             this.onsubmit.call(this, tmpl.$('input').val());
         }
         tmpl.$('.popover').trigger('hide');
-        doSavedTransition();
-
-        function doSavedTransition () {
-            var $e = tmpl.$('.popover-handle'),
-                bgColor = $e.css('background-color');
-
-            $e.css('background-color', '#FFFF80');
-            setTimeout(function(){
-                if(bgColor === 'transparent') {
-                    bgColor = '';
-                }
-                $e.css('background-color', bgColor);
-                $e.addClass('editable-bg-transition');
-                setTimeout(function(){
-                    $e.removeClass('editable-bg-transition');
-                }, 1700);
-            }, 10);
-        }
+        doSavedTransition(tmpl);
     },
     'click .editable-cancel': function (e, tmpl) {
         tmpl.$('.popover').trigger('hide');
@@ -98,8 +73,6 @@ m_editable.events({
 m_editable.rendered = function () {
     var self = this;
     var $popover = self.$('.popover');
-
-    self.Session.set('settings', generateSettings(self.data));
 
     self.Deps.autorun(function () {
         var loading = self.Session.get('loading');
@@ -159,15 +132,38 @@ Meteor.startup(function () {
 });
 
 function generateSettings (settings) {
+    if (POSSIBLE_POSITIONS.indexOf(settings.position) == -1)
+        delete settings.position;
+    if (!Template['m_editable_form_' + settings.type])
+        delete settings.type;
     return _.extend({
+        type: 'text',
         emptyText: 'Empty',
         async: false,
         showbuttons: true,
         onsubmit: null,
         value: null,
         position: 'left',
-        title: ''
+        title: null,
+        placeholder: null,
     }, settings);
+}
+
+function doSavedTransition (tmpl) {
+    var $e = tmpl.$('.popover-handle'),
+        bgColor = $e.css('background-color');
+
+    $e.css('background-color', '#FFFF80');
+    setTimeout(function(){
+        if(bgColor === 'transparent') {
+            bgColor = '';
+        }
+        $e.css('background-color', bgColor);
+        $e.addClass('editable-bg-transition');
+        setTimeout(function(){
+            $e.removeClass('editable-bg-transition');
+        }, 1700);
+    }, 10);
 }
 
 // Session & Deps stuff

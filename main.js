@@ -1,6 +1,6 @@
 if (Meteor.isClient) {
     Session.setDefault('text', 'superuser');
-    Session.setDefault('poss', 'left');
+    Session.setDefault('poss', 'bottom');
     Template.main.text = function () {
         return Session.get('text');
     };

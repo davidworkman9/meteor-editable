@@ -3,7 +3,22 @@ Package.describe({
 });
 
 Package.on_use(function (api) {
+    var fs = Npm.require('fs');
     api.use(['templating'], 'client');
 
-    api.add_files(['editable.html', 'img/clear.png', 'img/loading.gif', 'bootstrap-editable.css', 'editable.js'], 'client');
+    api.add_files([
+        'inputs/text/text.html',
+
+        'inputs/textarea/textarea.html',
+        'inputs/textarea/textarea.js',
+
+
+    ], 'client');
+    api.add_files([
+        'img/clear.png',
+        'img/loading.gif',
+        'bootstrap-editable.css',
+        'editable.html',
+        'editable.js'
+    ], 'client');
 });
