@@ -13,10 +13,11 @@ Package.on_use(function (api) {
         'inputs/select/select.html',
         'inputs/select/select.js',
 
+        'inputs/date/date.html',
+        'inputs/date/date.js',
+
         'inputs/textarea/textarea.html',
-        'inputs/textarea/textarea.js',
-
-
+        'inputs/textarea/textarea.js'
     ], 'client');
     api.add_files([
         'img/clear.png',

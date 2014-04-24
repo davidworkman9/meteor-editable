@@ -1,5 +1,5 @@
 if (Meteor.isClient) {
-    Session.setDefault('text', 4);
+    Session.setDefault('text', new Date());
     Session.setDefault('poss', 'bottom');
     var arr = [];
     _(10).times(function (i) {

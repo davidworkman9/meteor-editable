@@ -46,6 +46,7 @@ m_editable.events({
         tmpl.Session.set('loading', false);
     },
     'shown .popover': function (e, tmpl) {
+        console.log('hello');
         tmpl.$('.editable-focus').first().focus();
     },
     'hide .popover': function (e, tmpl) {
@@ -61,6 +62,11 @@ m_editable.events({
         }, 325); // 325 seems to be the magic number (for my desktop at least) so the user doesn't see the form show up again
     },
     'show .popover': function (e, tmpl) {
+        if ($(e.target).hasClass('.editable-date')) {
+            e.stopImmediatePropagation();
+            return;
+        }
+
         if (tmpl.Session.equals('popover-visible', true)) {
             e.stopImmediatePropagation();
             return;
