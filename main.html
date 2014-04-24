@@ -9,16 +9,15 @@
 <template name="main">
     <div class="container">
         <div class="col-xs-2 col-xs-offset-5" style="margin-top: 200px;">
-            <span>
-                {{> m_editable
-                    type="textarea"
-                    value=text
-                    position=poss
-                    showbuttons=true
-                    onsubmit=onsubmission
-                    placeholder="some comments please"
-                }}
-            </span>
+            {{> m_editable
+                type="select"
+                source=options
+                value=text
+                position=poss
+                showbuttons=false
+                onsubmit=onsubmission
+                placeholder="some comments please"
+            }}
         </div>
     </div>
 </template>

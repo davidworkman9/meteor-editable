@@ -8,6 +8,10 @@ Package.on_use(function (api) {
 
     api.add_files([
         'inputs/text/text.html',
+        'inputs/text/text.js',
+
+        'inputs/select/select.html',
+        'inputs/select/select.js',
 
         'inputs/textarea/textarea.html',
         'inputs/textarea/textarea.js',

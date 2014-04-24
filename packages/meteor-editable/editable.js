@@ -16,16 +16,18 @@ m_editable.events({
     'submit': function (e, tmpl) {
         var self = this;
 
+        var val = Template['m_editable_form_' + this.type].getVal(tmpl.$('.editable-input'));
+
         if (typeof self.onsubmit === 'function') {
             if (self.async) {
                 tmpl.Session.set('loading', true);
-                this.onsubmit.call(this, tmpl.$('input').val(), function () {
+                this.onsubmit.call(this, val, function () {
                     tmpl.$('.popover').trigger('hide');
                     doSavedTransition(tmpl);
                 });
                 return;
             }
-            this.onsubmit.call(this, tmpl.$('input').val());
+            this.onsubmit.call(this, val);
         }
         tmpl.$('.popover').trigger('hide');
         doSavedTransition(tmpl);
