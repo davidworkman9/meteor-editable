@@ -3,6 +3,7 @@ var POSSIBLE_POSITIONS = ['left', 'right', 'top', 'bottom'];
 Template.m_editable.helpers({ 'settings': function () { return generateSettings(this); } });
 
 m_editable.helpers({
+    'displayVal':    function (v) { return typeof this.display === 'function' ? this.display(v) : v; },
     'value':         function () { return valueToText(this.value, this.source) || this.emptyText; },
     'editableEmpty': function () { return !valueToText(this.value, this.source) ? 'editable-empty' : '';},
     'inputTemplate': function () { return Template['m_editable_form_' + this.type]; }
@@ -22,33 +23,33 @@ m_editable.events({
             if (self.async) {
                 tmpl.Session.set('loading', true);
                 this.onsubmit.call(this, val, function () {
-                    tmpl.$('.popover').trigger('hide');
+                    tmpl.$('.m_editable-popup').trigger('hide');
                     doSavedTransition(tmpl);
                 });
                 return;
             }
             this.onsubmit.call(this, val);
         }
-        tmpl.$('.popover').trigger('hide');
+        tmpl.$('.m_editable-popup').trigger('hide');
         doSavedTransition(tmpl);
     },
     'click .editable-cancel': function (e, tmpl) {
-        tmpl.$('.popover').trigger('hide');
+        tmpl.$('.m_editable-popup').trigger('hide');
     },
     'submit .editableform': function (e) {
         e.preventDefault();
     },
     'click .popover-handle': function (e, tmpl) {
         e.stopPropagation();
-        tmpl.$('.popover').trigger(!tmpl.Session.get('popover-visible') ? 'show' : 'hide');
+        tmpl.$('.m_editable-popup').trigger(!tmpl.Session.get('popover-visible') ? 'show' : 'hide');
     },
-    'hidden .popover': function (e, tmpl) {
+    'hidden .m_editable-popup': function (e, tmpl) {
         tmpl.Session.set('loading', false);
     },
-    'shown .popover': function (e, tmpl) {
+    'shown .m_editable-popup': function (e, tmpl) {
         tmpl.$('.editable-focus').first().focus();
     },
-    'hide .popover': function (e, tmpl) {
+    'hide .m_editable-popup': function (e, tmpl) {
         if (tmpl.Session.equals('popover-visible', false)) {
             e.stopImmediatePropagation();
             return;
@@ -60,7 +61,7 @@ m_editable.events({
             $(e.target).trigger('hidden');
         }, 325); // 325 seems to be the magic number (for my desktop at least) so the user doesn't see the form show up again
     },
-    'show .popover': function (e, tmpl) {
+    'show .m_editable-popup': function (e, tmpl) {
         if (tmpl.Session.equals('popover-visible', true)) {
             e.stopImmediatePropagation();
             return;
@@ -74,7 +75,7 @@ m_editable.events({
 
 m_editable.rendered = function () {
     var self = this;
-    var $popover = self.$('.popover');
+    var $popover = self.$('.m_editable-popup');
 
     self.Deps.autorun(function () {
         var loading = self.Session.get('loading');
@@ -121,12 +122,12 @@ m_editable.rendered = function () {
 
 Meteor.startup(function () {
     $(document).on('click.m_editable-popover-close', function (e) {
-        $('.popover:visible').each(function () {
+        $('.m_editable-popup:visible').each(function () {
             var $popover = $(this);
             if (!$popover.is(e.target) &&
-                !$popover.siblings('.popover-handle').is(e.target) &&
+                !$popover.siblings('.m_editable-popup-handle').is(e.target) &&
                 $popover.has(e.target).length === 0 &&
-                $popover.siblings('.popover-handle').has(e.target).length === 0) {
+                $popover.siblings('.m_editable-popup-handle').has(e.target).length === 0) {
                 $popover.trigger('hide');
             }
         });

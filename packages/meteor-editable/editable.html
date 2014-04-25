@@ -5,9 +5,9 @@
 </template>
 
 <template name="m_editable_main">
-    <a href="#" id="username" class="popover-handle {{editableEmpty}}">{{value}}</a>
+    <a href="#" class="popover-handle {{editableEmpty}}">{{displayVal value}}</a>
 
-    <div class="popover {{position}} editable-popup editable-container">
+    <div class="popover {{position}} editable-popup m_editable-popup editable-container">
         <div class="arrow"></div>
         {{#if title}}
             <h3 class="popover-title">{{title}}</h3>

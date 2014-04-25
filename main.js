@@ -44,6 +44,9 @@ if (Meteor.isClient) {
                 value: Session.get('date'),
                 title: 'Select birthdate',
                 showbuttons: false,
+                display: function (val) {
+                    return moment(val).format('MMM DD YYYY');
+                },
                 onsubmit: function (val) {
                     Session.set('date', val);
                 }
@@ -54,6 +57,9 @@ if (Meteor.isClient) {
                 type: 'datetime',
                 value: Session.get('datetime'),
                 title: 'Select event time',
+                display: function (val) {
+                    return moment(val).format('MMM DD YYYY h:mm A');
+                },
                 onsubmit: function (val) {
                     Session.set('datetime', val);
                 }
