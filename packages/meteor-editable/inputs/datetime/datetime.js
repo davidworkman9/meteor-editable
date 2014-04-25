@@ -2,16 +2,19 @@ Template.m_editable_form_datetime.helpers({
     'value': function () {
         var val = this.value;
         var rand = Random.id();
-        Meteor.defer(function () {
-            var $date = $('input[type="hidden"][value="' + rand + '"]').siblings('div.editable-date');
+        if (val instanceof Date) {
+            Meteor.defer(function () {
+                var $date = $('input[type="hidden"][value="' + rand + '"]').siblings('div.editable-date');
 
-            // initialize datetimepicker if it hasn't been already
-            if ($date.children().length === 0) {
-                initializeDatetimepicker($date);
-            }
-            $date.datetimepicker('setDate', val);
+                // initialize datetimepicker if it hasn't been already
+                if ($date.children().length === 0) {
+                    initializeDatetimepicker($date);
+                }
 
-        });
+                $date.datetimepicker('setDate', val);
+            });
+        }
+
         return rand;
     }
 });

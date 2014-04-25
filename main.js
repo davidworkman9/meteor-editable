@@ -1,5 +1,6 @@
 if (Meteor.isClient) {
     Session.setDefault('simpleText', 'superuser');
+    Session.setDefault('sex', 0);
     Template.main.helpers({
         'simpleTextOps': function () {
             return {
@@ -25,7 +26,7 @@ if (Meteor.isClient) {
             return {
                 type: 'select',
                 source: [
-                    { text: '', value: 0 },
+                    { text: 'not selected', value: 0 },
                     { text: 'Male', value: 'm' },
                     { text: 'Female', value: 'f' }
                 ],

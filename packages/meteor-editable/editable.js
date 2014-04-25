@@ -3,8 +3,8 @@ var POSSIBLE_POSITIONS = ['left', 'right', 'top', 'bottom'];
 Template.m_editable.helpers({ 'settings': function () { return generateSettings(this); } });
 
 m_editable.helpers({
-    'value':         function () { return this.value || this.emptyText; },
-    'editableEmpty': function () { return !this.value ? 'editable-empty' : '';},
+    'value':         function () { return valueToText(this.value, this.source) || this.emptyText; },
+    'editableEmpty': function () { return !valueToText(this.value, this.source) ? 'editable-empty' : '';},
     'inputTemplate': function () { return Template['m_editable_form_' + this.type]; }
 //     can't get tmpl in this context else I'd do this:
 //    'loading': function (a,b) {
@@ -132,6 +132,19 @@ Meteor.startup(function () {
         });
     });
 });
+
+function valueToText(val, source) {
+    if (source && source.length) {
+        _.each(source, function (s) {
+            if (val.toString() === s.value.toString()) {
+                val = s.text;
+                return;
+            }
+        });
+    }
+
+    return val;
+}
 
 function generateSettings (settings) {
     if (POSSIBLE_POSITIONS.indexOf(settings.position) == -1)
