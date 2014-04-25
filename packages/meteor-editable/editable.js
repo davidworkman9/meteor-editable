@@ -1,3 +1,34 @@
+mEditable = {
+    _types: new Meteor.Collection(null),
+    getTemplate: function (type) {
+        var t = this._types.findOne({_id: type });
+        if (!t)
+            throw new Meteor.Error(500, 'Editable type ' + type + ' is not defined.');
+        return Template[t.template];
+    },
+    getVal: function (type) {
+        return this._types.findOne({_id: type }).getVal;
+    },
+    addType: function (type) {
+        type._id = type.type;
+        delete type.type;
+
+        check(type, {
+            _id: Match.Where(function (t) {
+                check(t, String);
+                return t !== '';
+            }),
+            getVal: Function,
+            template: Match.Where(function (t) {
+                return typeof t === 'object';
+            })
+        });
+        // store only the template name
+        type.template = type.template.kind.replace(/^Template_/, '');
+        return this._types.insert(type);
+    }
+};
+
 var m_editable = Template['m_editable_main'];
 var POSSIBLE_POSITIONS = ['left', 'right', 'top', 'bottom'];
 Template.m_editable.helpers({ 'settings': function () { return generateSettings(this); } });
@@ -6,7 +37,7 @@ m_editable.helpers({
     'displayVal':    function (v) { return typeof this.display === 'function' ? this.display(v) : v; },
     'value':         function () { return valueToText(this.value, this.source) || this.emptyText; },
     'editableEmpty': function () { return !valueToText(this.value, this.source) ? 'editable-empty' : '';},
-    'inputTemplate': function () { return Template['m_editable_form_' + this.type]; }
+    'inputTemplate': function () { return mEditable.getTemplate(this.type); }
 //     can't get tmpl in this context else I'd do this:
 //    'loading': function (a,b) {
 //        return tmpl.Session.get('loading');
@@ -17,7 +48,7 @@ m_editable.events({
     'submit': function (e, tmpl) {
         var self = this;
 
-        var val = Template['m_editable_form_' + this.type].getVal(tmpl.$('.editable-input'));
+        var val = mEditable.getVal(this.type)(tmpl.$('.editable-input'));
 
         if (typeof self.onsubmit === 'function') {
             if (self.async) {

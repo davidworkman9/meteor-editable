@@ -1,3 +1,11 @@
+mEditable.addType({
+    type: 'datetime',
+    template: Template.m_editable_form_datetime,
+    getVal: function ($inputWrapper) {
+        return $inputWrapper.find('div.editable-date').datetimepicker('getDate');
+    }
+});
+
 Template.m_editable_form_datetime.helpers({
     'value': function () {
         var val = this.value;
@@ -24,15 +32,17 @@ Template.m_editable_form_datetime.events({
         e.stopImmediatePropagation();
     },
     'changeDate': function (e) {
-        if (!this.showbuttons && e.date.getTime() !== stripTimeFromDate(this.value).getTime()) {
+        if (!this.showbuttons && e.date.getTime() !== getCurrentValsTime(this.value)) {
             $(e.target).closest('form').submit();
+        }
+
+        function getCurrentValsTime (v) {
+            if (!v)
+                return false;
+            return v.getTime();
         }
     }
 });
-
-Template.m_editable_form_datetime.getVal = function ($container) {
-    return $container.find('div.editable-date').datetimepicker('getDate');
-};
 
 Template.m_editable_form_datetime.rendered = function () {
     initializeDatetimepicker(this.$('div.editable-date'));

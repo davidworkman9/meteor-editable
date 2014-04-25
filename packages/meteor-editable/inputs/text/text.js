@@ -1,3 +1,7 @@
-Template.m_editable_form_text.getVal = function ($container) {
-    return $container.find('input').val();
-};
+mEditable.addType({
+    type: 'text',
+    template: Template.m_editable_form_text,
+    getVal: function ($inputWrapper) {
+        return $inputWrapper.find('input').val();
+    }
+});

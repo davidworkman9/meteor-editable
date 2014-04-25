@@ -5,14 +5,27 @@ Package.describe({
 Package.on_use(function (api) {
     var fs = Npm.require('fs');
     api.use([
-        'templating'
+        'check',
+        'templating',
+        'underscore'
     ], 'client');
 
+    // libs
     api.add_files([
         'lib/bootstrap-datetimepicker/bootstrap-datetimepicker.css',
         'lib/bootstrap-datetimepicker/bootstrap-datetimepicker.js'
     ], 'client');
 
+    // main files
+    api.add_files([
+        'img/clear.png',
+        'img/loading.gif',
+        'bootstrap-editable.css',
+        'editable.html',
+        'editable.js'
+    ], 'client');
+
+    // input types
     api.add_files([
         'inputs/text/text.html',
         'inputs/text/text.js',
@@ -28,12 +41,5 @@ Package.on_use(function (api) {
 
         'inputs/textarea/textarea.html',
         'inputs/textarea/textarea.js'
-    ], 'client');
-    api.add_files([
-        'img/clear.png',
-        'img/loading.gif',
-        'bootstrap-editable.css',
-        'editable.html',
-        'editable.js'
     ], 'client');
 });

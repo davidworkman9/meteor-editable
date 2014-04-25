@@ -1,3 +1,11 @@
+mEditable.addType({
+    type: 'date',
+    template: Template.m_editable_form_date,
+    getVal: function ($inputWrapper) {
+        return $inputWrapper.find('div.editable-date').datepicker('getDate');
+    }
+});
+
 Template.m_editable_form_date.helpers({
     'value': function () {
         var val = this.value;
@@ -39,10 +47,6 @@ Template.m_editable_form_date.rendered = function () {
         // for some reason, the click events aren't being registered as inside the popover and causing
         // the hide event to be called and events don't fire when registered under Template.events
         .click(function (e) { e.stopPropagation(); });
-};
-
-Template.m_editable_form_date.getVal = function ($container) {
-    return $container.find('div.editable-date').datepicker('getDate');
 };
 
 function initializeDatepicker(div) {

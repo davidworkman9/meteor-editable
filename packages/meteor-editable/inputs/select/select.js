@@ -1,6 +1,10 @@
-Template.m_editable_form_select.getVal = function ($container) {
-    return $container.find('select').val();
-};
+mEditable.addType({
+    type: 'select',
+    template: Template.m_editable_form_select,
+    getVal: function ($inputWrapper) {
+        return $inputWrapper.find('select').val();
+    }
+});
 
 Template.m_editable_form_select.helpers({
     'selectedVal': function (v) {
