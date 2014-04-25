@@ -5,7 +5,5 @@
     "author": "Dave Workman <davidworkman9@gmail.com>",
     "version": "0.7.1",
     "git": "https://github.com/davidworkman9/meteor-editable.git",
-    "packages": {
-        "bootstrap3-datepicker": "0.2.0"
-    }
+    "packages": { }
 }

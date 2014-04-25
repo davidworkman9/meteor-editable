@@ -4,7 +4,14 @@ Package.describe({
 
 Package.on_use(function (api) {
     var fs = Npm.require('fs');
-    api.use(['templating'], 'client');
+    api.use([
+        'templating'
+    ], 'client');
+
+    api.add_files([
+        'lib/bootstrap-datetimepicker/bootstrap-datetimepicker.css',
+        'lib/bootstrap-datetimepicker/bootstrap-datetimepicker.js'
+    ], 'client');
 
     api.add_files([
         'inputs/text/text.html',
@@ -15,6 +22,9 @@ Package.on_use(function (api) {
 
         'inputs/date/date.html',
         'inputs/date/date.js',
+
+        'inputs/datetime/datetime.html',
+        'inputs/datetime/datetime.js',
 
         'inputs/textarea/textarea.html',
         'inputs/textarea/textarea.js'
