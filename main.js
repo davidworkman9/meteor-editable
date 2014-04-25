@@ -48,6 +48,17 @@ if (Meteor.isClient) {
                 }
             }
         },
+        'datetimeOps': function () {
+            return {
+                type: 'datetime',
+                value: Session.get('datetime'),
+                title: 'Select event time',
+                onsubmit: function (val) {
+                    Session.set('datetime', val);
+                }
+            }
+        },
+
         'textareaOps': function () {
             return {
                 type: 'textarea',
