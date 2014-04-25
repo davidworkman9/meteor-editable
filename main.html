@@ -7,17 +7,48 @@
 </body>
 
 <template name="main">
-    <div class="container">
-        <div class="col-xs-2 col-xs-offset-5" style="margin-top: 200px;">
-            {{> m_editable
-                type="datetime"
-                source=options
-                value=text
-                position=poss
-                showbuttons=true
-                onsubmit=onsubmission
-                placeholder="some comments please"
-            }}
+    <ul class="nav nav-tabs">
+        <li><a href="#home" data-toggle="tab">Home</a></li>
+        <li class="active"><a href="#demo" data-toggle="tab">Demo</a></li>
+        <li><a href="#docs" data-toggle="tab">Docs</a></li>
+        <li><a href="https://www.github.com/davidworkman9/meteor-editable">GitHub</a></li>
+    </ul>
+
+    <div class="tab-content">
+        <div class="tab-pane" id="home"></div>
+        <div class="tab-pane active" id="demo">
+            <div class="container" style="width: 90%;">
+                <h1>Meteor-Editable Demo</h1>
+                <table id="user" class="table table-bordered table-striped" style="clear: both">
+                    <tbody>
+                        <tr>
+                            <td>Simple text field</td>
+                            <td>{{> m_editable simpleTextOps }}</td>
+                        </tr>
+                        <tr>
+                            <td>Empty text field</td>
+                            <td>{{> m_editable emptyTextOps }} <span class="not-implemented-note">* validation not yet implemented.</span></td>
+                        </tr>
+                        <tr>
+                            <td>Select, no buttons</td>
+                            <td>{{> m_editable selectOps }} <span class="not-implemented-note">* ID/value to friendly not yet implemented.</span></td>
+                        </tr>
+                        <tr>
+                            <td>Datepicker</td>
+                            <td>{{> m_editable dateOps }} <span class="not-implemented-note">* date display formats not yet implemented.</span></td>
+                        </tr>
+                        <tr>
+                            <td>Textarea. Submit by ctrl+enter</td>
+                            <td>{{> m_editable textareaOps }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="tab-pane" id="docs">
+
         </div>
     </div>
+
+
 </template>

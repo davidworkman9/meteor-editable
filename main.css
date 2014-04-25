@@ -1,0 +1,13 @@
+td:first-child {
+    width: 35%;
+}
+
+td:last-child {
+    width: 65%;
+}
+
+.not-implemented-note {
+    float: right;
+    font-style: italic;
+    color: grey;
+}

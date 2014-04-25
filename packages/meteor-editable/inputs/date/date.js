@@ -9,7 +9,8 @@ Template.m_editable_form_date.helpers({
             if ($date.children().length === 0) {
                 initializeDatepicker($date);
             }
-            $date.datepicker('setDate', stripTimeFromDate(val));
+            if (val instanceof Date)
+                $date.datepicker('setDate', stripTimeFromDate(val));
         });
         return rand;
     }
@@ -20,8 +21,14 @@ Template.m_editable_form_date.events({
         e.stopImmediatePropagation();
     },
     'changeDate': function (e) {
-        if (!this.showbuttons && e.date.getTime() !== stripTimeFromDate(this.value).getTime()) {
+        if (e.date && !this.showbuttons && e.date.getTime() !== getCurrentValsTime(this.value)) {
             $(e.target).closest('form').submit();
+        }
+
+        function getCurrentValsTime (v) {
+            if (!v)
+                return false;
+            return stripTimeFromDate(v).getTime();
         }
     }
 });
@@ -48,5 +55,6 @@ function initializeDatepicker(div) {
 }
 
 function stripTimeFromDate(date) {
-    return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    if (date instanceof Date)
+        return new Date(date.getFullYear(), date.getMonth(), date.getDate());
 }
