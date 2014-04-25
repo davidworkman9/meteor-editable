@@ -13,6 +13,9 @@ mEditable = {
         type._id = type.type;
         delete type.type;
 
+        // allow users to override types
+        this._types.remove({_id:  type._id });
+
         check(type, {
             _id: Match.Where(function (t) {
                 check(t, String);
@@ -181,7 +184,7 @@ function valueToText(val, source) {
 function generateSettings (settings) {
     if (POSSIBLE_POSITIONS.indexOf(settings.position) == -1)
         delete settings.position;
-    if (!Template['m_editable_form_' + settings.type])
+    if (!mEditable._types.findOne({_id: settings.type }))
         delete settings.type;
     return _.extend({
         type: 'text',

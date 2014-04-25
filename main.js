@@ -76,6 +76,18 @@ if (Meteor.isClient) {
                     Session.set('textarea', val);
                 }
             }
+        },
+        'html5Inputs': function () { return ['Password', 'Number', 'Email', 'URL', 'tel', 'Range', 'Time']; },
+        'inputOps': function () {
+            var type = this.toString().toLowerCase();
+            return {
+                type: type,
+                value: Session.get(type),
+                title: 'Enter your password',
+                onsubmit: function (val) {
+                    Session.set(type, val);
+                }
+            }
         }
     });
 }

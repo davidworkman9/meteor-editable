@@ -46,6 +46,12 @@
                             <td>Textarea. Submit by ctrl+enter</td>
                             <td>{{> m_editable textareaOps }}</td>
                         </tr>
+                        {{#each html5Inputs}}
+                            <tr>
+                                <td>{{this}}</td>
+                                <td>{{> m_editable inputOps }}</td>
+                            </tr>
+                        {{/each}}
                     </tbody>
                 </table>
             </div>
