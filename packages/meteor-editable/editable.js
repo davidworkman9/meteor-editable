@@ -37,7 +37,7 @@ var POSSIBLE_POSITIONS = ['left', 'right', 'top', 'bottom'];
 Template.m_editable.helpers({ 'settings': function () { return generateSettings(this); } });
 
 m_editable.helpers({
-    'displayVal':    function (v) { return typeof this.display === 'function' ? this.display(v) : v; },
+    'displayVal':    function (v) { return typeof this.display === 'function' ? this.display(v, this.value) : v; },
     'value':         function () { return valueToText(this.value, this.source) || this.emptyText; },
     'editableEmpty': function () { return !valueToText(this.value, this.source) ? 'editable-empty' : '';},
     'inputTemplate': function () { return mEditable.getTemplate(this.type); }
@@ -168,16 +168,22 @@ Meteor.startup(function () {
 });
 
 function valueToText(val, source) {
+    val = val || '';
+    val = _.isArray(val) ? val : [val];
+
     if (source && source.length) {
-        _.each(source, function (s) {
-            if (val.toString() === s.value.toString()) {
-                val = s.text;
-                return;
-            }
-        });
+        return _.map(val, function (v, i) {
+            _.each(source, function (s) {
+                if (v.toString() === s.value.toString()) {
+                    v = s.text;
+                }
+            });
+            return v;
+        }).join(', ');
     }
 
-    return val;
+    // if we got this far, return the original value
+    return val[0];
 }
 
 function generateSettings (settings) {

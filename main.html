@@ -15,7 +15,12 @@
     </ul>
 
     <div class="tab-content">
-        <div class="tab-pane" id="home"></div>
+        <div class="tab-pane" id="home">
+            TODO:
+            <ul>
+                <li>Allow source to be a function</li>
+            </ul>
+        </div>
         <div class="tab-pane active" id="demo">
             <div class="container" style="width: 90%;">
                 <h1>Meteor-Editable Demo</h1>
@@ -23,7 +28,7 @@
                 <table id="user" class="table table-bordered table-striped" style="clear: both">
                     <tbody>
                         <tr>
-                            <td>Simple text field</td>
+                            <td>Simple text field (async)</td>
                             <td>{{> m_editable simpleTextOps }}</td>
                         </tr>
                         <tr>
@@ -52,6 +57,10 @@
                                 <td>{{> m_editable inputOps }}</td>
                             </tr>
                         {{/each}}
+                        <tr>
+                            <td>Select2 (tags mode)</td>
+                            <td>{{> m_editable select2TagsOps }}</td>
+                        </tr>
                     </tbody>
                 </table>
             </div>

@@ -7,8 +7,12 @@ if (Meteor.isClient) {
                 type: 'text',
                 value: Session.get('simpleText'),
                 title: 'Enter username',
-                onsubmit: function (val) {
-                    Session.set('simpleText', val);
+                async: true,
+                onsubmit: function (val, cb) {
+                    setTimeout(function () {
+                        Session.set('simpleText', val);
+                        cb();
+                    }, 1000);
                 }
             }
         },
@@ -77,13 +81,30 @@ if (Meteor.isClient) {
                 }
             }
         },
+        'select2TagsOps': function () {
+            return {
+                type: 'select2',
+                select2: { multiple: true },
+                source: [
+                    { text: 'JS', value: 'js' },
+                    { text: 'HTML5', value: 'html5' },
+                    { text: 'Meteor', value: 'meteor' },
+                    { text: 'CSS3', value: 'css3' }
+                ],
+                value: Session.get('select2Tags'),
+                title: 'Enter Tags',
+                onsubmit: function (val) {
+                    Session.set('select2Tags', val);
+                }
+            }
+        },
         'html5Inputs': function () { return ['Password', 'Number', 'Email', 'URL', 'tel', 'Range', 'Time']; },
         'inputOps': function () {
             var type = this.toString().toLowerCase();
             return {
                 type: type,
                 value: Session.get(type),
-                title: 'Enter your password',
+                title: this.toString(),
                 onsubmit: function (val) {
                     Session.set(type, val);
                 }
