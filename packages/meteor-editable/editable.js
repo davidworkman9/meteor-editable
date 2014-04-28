@@ -74,7 +74,6 @@ m_editable.events({
         e.preventDefault();
     },
     'click .popover-handle': function (e, tmpl) {
-        e.stopPropagation();
         tmpl.$('.m_editable-popup').trigger(!tmpl.Session.get('popover-visible') ? 'show' : 'hide');
     },
     'hidden .m_editable-popup': function (e, tmpl) {
