@@ -63,6 +63,8 @@ m_editable.events({
                 return;
             }
             this.onsubmit.call(this, val);
+        } else {
+            tmpl.$('.popover-handle').text(val);
         }
         tmpl.$('.m_editable-popup').trigger('hide');
         doSavedTransition(tmpl);
