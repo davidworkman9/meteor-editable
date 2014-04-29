@@ -6,23 +6,42 @@ mEditable.addType({
     }
 });
 
+Template.m_editable_form_select2.events({
+    'on-update .select2-editable': function (e, tmpl) {}    // just used to make the template data reactive in rendered
+});
+
+Template.m_editable_form_select2.destroyed = function () { if (this.dep) this.dep.stop(); };
 Template.m_editable_form_select2.rendered = function () {
-    var self = this,
-        data = self.data;
+    var self = this;
+    if (self.dep) self.dep.stop();
+    self.dep = Deps.autorun(function () {
+        var $select2 = self.$('.select2-editable');
+        $select2.trigger('on-update');
 
-    data.select2 = data.select2 || {};
+        var data = self.data,
+            isMultiple = data.select2.tags || data.select2.multiple;
+        data.select2 = data.select2 || {};
 
-    if (data.placeholder) {
-        data.select2.placeholder = data.placeholder;
-    }
+        if (data.placeholder) {
+            data.select2.placeholder = data.placeholder;
+        }
 
-    //if not `tags` mode, use source
-    if(!data.select2.tags && data.source) {
-        data.select2.data = convertSource(data.source);
-    }
+        //if not `tags` mode, use source
+        if(!data.select2.tags && data.source) {
+            data.select2.data = convertSource(data.source);
+        }
 
-    data.select2 = _.extend(/* TODO: project defaults */ {}, data.select2);
-    self.$('div').select2(data.select2);
+        data.select2 = _.extend(/* TODO: project defaults */ {}, data.select2);
+        try {
+            $select2.select2('destroy');
+        } catch (e) {}
+        $select2.select2(data.select2);
+
+        var value = data.value;
+        if (isMultiple && !_.isArray(data.value))
+            value = [value];
+        $select2.select2('val', value);
+    });
 };
 
 function convertSource (src) {
