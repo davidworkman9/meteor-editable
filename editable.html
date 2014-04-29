@@ -4,9 +4,16 @@
     {{/with}}
 </template>
 
-<template name="m_editable_main">
-    <a href="#" class="popover-handle {{editableEmpty}}">{{displayVal value}}</a>
+<template name="m_editable_handle_atag">
+    <a href="#" class="popover-handle {{editableEmpty}}">{{displayVal}}</a>
+</template>
 
+<template name="m_editable_handle_span">
+    <span class="popover-handle {{editableEmpty}}">{{displayVal}}</span>
+</template>
+
+<template name="m_editable_main">
+    {{> m_editable_handle displayVal=displayVal editableEmpty=editableEmpty handle=handle }}
     <div class="popover {{position}} editable-popup m_editable-popup editable-container">
         <div class="arrow"></div>
         {{#if title}}

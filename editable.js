@@ -37,9 +37,26 @@ var POSSIBLE_POSITIONS = ['left', 'right', 'top', 'bottom'];
 Template.m_editable.helpers({ 'settings': function () { return generateSettings(this); } });
 
 m_editable.helpers({
-    'displayVal':    function (v) { return typeof this.display === 'function' ? this.display(v, this.value) : v; },
+    'm_editable_handle': function () {
+        if (this.handle === 'span')
+            return Template.m_editable_handle_span;
+        return Template.m_editable_handle_atag;
+    },
+    'displayVal': function () {
+        var v = valueToText(this.value, this.source) || this.emptyText;
+        if (typeof this.display === 'function') {
+            return this.display(v, this.value) || this.emptyText;
+        }
+        return v || this.emptyText;
+    },
     'value':         function () { return valueToText(this.value, this.source) || this.emptyText; },
-    'editableEmpty': function () { return !valueToText(this.value, this.source) ? 'editable-empty' : '';},
+    'editableEmpty': function () {
+        var v = valueToText(this.value, this.source);
+        if (typeof this.display === 'function') {
+            v = this.display(v, this.value);
+        }
+        return !v.trim() ? 'editable-empty' : '';
+    },
     'inputTemplate': function () { return mEditable.getTemplate(this.type); }
 //     can't get tmpl in this context else I'd do this:
 //    'loading': function (a,b) {
