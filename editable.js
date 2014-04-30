@@ -81,7 +81,7 @@ m_editable.events({
             }
             this.onsubmit.call(this, val);
         } else {
-            tmpl.$('.popover-handle').text(val);
+            tmpl.$('.editable-click').text(val);
         }
         tmpl.$('.m_editable-popup').trigger('hide');
         doSavedTransition(tmpl);
@@ -92,7 +92,7 @@ m_editable.events({
     'submit .editableform': function (e) {
         e.preventDefault();
     },
-    'click .popover-handle': function (e, tmpl) {
+    'click .editable-click': function (e, tmpl) {
         tmpl.$('.m_editable-popup').trigger(!tmpl.Session.get('popover-visible') ? 'show' : 'hide');
     },
     'hidden .m_editable-popup': function (e, tmpl) {
@@ -158,7 +158,7 @@ m_editable.rendered = function () {
             var placement = self.data.position,
                 actualWidth = $popover[0].offsetWidth,
                 actualHeight = $popover[0].offsetHeight,
-                pos = $.fn.tooltip.Constructor.prototype.getPosition.call({ $element: $popover.siblings('.popover-handle') });
+                pos = $.fn.tooltip.Constructor.prototype.getPosition.call({ $element: $popover.siblings('.editable-click') });
             var calculatedOffset = $.fn.tooltip.Constructor.prototype.getCalculatedOffset(placement, pos, actualWidth, actualHeight);
 
             $.fn.tooltip.Constructor.prototype.applyPlacement.call({
@@ -224,7 +224,7 @@ function generateSettings (settings) {
 }
 
 function doSavedTransition (tmpl) {
-    var $e = tmpl.$('.popover-handle'),
+    var $e = tmpl.$('.editable-click'),
         bgColor = $e.css('background-color');
 
     $e.css('background-color', '#FFFF80');
