@@ -65,6 +65,9 @@ m_editable.helpers({
 });
 
 m_editable.events({
+    'resize .editable-container': function (e, tmpl) {
+        resizePopover(tmpl.$('.m_editable-popup'), this.position);
+    },
     'submit': function (e, tmpl) {
         var self = this;
 
@@ -154,23 +157,25 @@ m_editable.rendered = function () {
         if (visible) {
             $popover.trigger('show');
             $popover.fadeIn();
-
-            var placement = self.data.position,
-                actualWidth = $popover[0].offsetWidth,
-                actualHeight = $popover[0].offsetHeight,
-                pos = $.fn.tooltip.Constructor.prototype.getPosition.call({ $element: $popover.siblings('.editable-click') });
-            var calculatedOffset = $.fn.tooltip.Constructor.prototype.getCalculatedOffset(placement, pos, actualWidth, actualHeight);
-
-            $.fn.tooltip.Constructor.prototype.applyPlacement.call({
-                tip: function () { return $popover; },
-                replaceArrow: function (delta, dimension, position) { $popover.find('.arrow').css(position, delta ? (50 * (1 - delta / dimension) + '%') : ''); }
-            }, calculatedOffset, placement);
+            resizePopover($popover, self.data.position);
         } else {
             $popover.trigger('hide');
             $popover.fadeOut();
         }
     });
 };
+
+function resizePopover ($popover, placement) {
+    var actualWidth = $popover[0].offsetWidth,
+        actualHeight = $popover[0].offsetHeight,
+        pos = $.fn.tooltip.Constructor.prototype.getPosition.call({ $element: $popover.siblings('.editable-click') });
+    var calculatedOffset = $.fn.tooltip.Constructor.prototype.getCalculatedOffset(placement, pos, actualWidth, actualHeight);
+
+    $.fn.tooltip.Constructor.prototype.applyPlacement.call({
+        tip: function () { return $popover; },
+        replaceArrow: function (delta, dimension, position) { $popover.find('.arrow').css(position, delta ? (50 * (1 - delta / dimension) + '%') : ''); }
+    }, calculatedOffset, placement);
+}
 
 Meteor.startup(function () {
     $(document).on('click.m_editable-popover-close', function (e) {

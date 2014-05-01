@@ -7,7 +7,10 @@ mEditable.addType({
 });
 
 Template.m_editable_form_select2.events({
-    'on-update .select2-editable': function (e, tmpl) {}    // just used to make the template data reactive in rendered
+    'on-update .select2-editable': function () {},    // just used to make the template data reactive in rendered
+    'change .select2-editable': function (e) {
+        $(e.target).parents('.editable-container').trigger('resize');
+    }
 });
 
 Template.m_editable_form_select2.destroyed = function () { if (this.dep) this.dep.stop(); };
