@@ -38,9 +38,7 @@ Template.m_editable.helpers({ 'settings': function () { return generateSettings(
 
 m_editable.helpers({
     'm_editable_handle': function () {
-        if (this.handle === 'span')
-            return Template.m_editable_handle_span;
-        return Template.m_editable_handle_atag;
+        return this.handle || Template.m_editable_handle_atag;
     },
     'displayVal': function () {
         var v = valueToText(this.value, this.source) || this.emptyText;
