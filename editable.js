@@ -37,8 +37,8 @@ var POSSIBLE_POSITIONS = ['left', 'right', 'top', 'bottom'];
 Template.m_editable.helpers({ 'settings': function () { return generateSettings(this); } });
 
 m_editable.helpers({
-    'm_editable_handle': function () {
-        return this.handle || Template.m_editable_handle_atag;
+    'm_editable_template': function () {
+        return this.template || Template.m_editable_handle_atag;
     },
     'displayVal': function () {
         var v = valueToText(this.value, this.source) || this.emptyText;
