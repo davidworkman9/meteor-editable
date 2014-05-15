@@ -47,6 +47,9 @@ m_editable.helpers({
         }
         return v || this.emptyText;
     },
+    'resetForm': function () {
+        return Session.get('m_editable.resetForm');
+    },
     'value':         function () { return valueToText(this.value, this.source) || this.emptyText; },
     'editableEmpty': function () {
         var v = valueToText(this.value, this.source);
@@ -98,6 +101,12 @@ m_editable.events({
     },
     'hidden .m_editable-popup': function (e, tmpl) {
         tmpl.Session.set('loading', false);
+
+        // hack to reset form
+        Session.set('m_editable.resetForm', true);
+        setTimeout(function () {
+            Session.set('m_editable.resetForm', false);
+        }, 10);
     },
     'shown .m_editable-popup': function (e, tmpl) {
         tmpl.$('.editable-focus').first().focus();

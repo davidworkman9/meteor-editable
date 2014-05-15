@@ -23,7 +23,9 @@
                         <div class="control-group form-group">
                             <div>
                                 <div class="editable-input" style="position: relative;">
-                                    {{> inputTemplate}}
+                                    {{#unless resetForm}}
+                                        {{> inputTemplate}}
+                                    {{/unless}}
                                 </div>
 
                                 {{#if showbuttons}}
