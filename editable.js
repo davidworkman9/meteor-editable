@@ -214,7 +214,7 @@ function valueToText(val, source) {
     }
 
     // if we got this far, return the original value
-    return val[0] || '';
+    return val[0].toString() || '';
 }
 
 function generateSettings (settings) {
