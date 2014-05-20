@@ -175,7 +175,7 @@ m_editable.rendered = function () {
 function resizePopover ($popover, placement) {
     var actualWidth = $popover[0].offsetWidth,
         actualHeight = $popover[0].offsetHeight,
-        pos = $.fn.tooltip.Constructor.prototype.getPosition.call({ $element: $popover.siblings('.editable-click') });
+        pos = $.fn.tooltip.Constructor.prototype.getPosition.call({ $element: $popover.prevAll('.editable-click:first') });
     var calculatedOffset = $.fn.tooltip.Constructor.prototype.getCalculatedOffset(placement, pos, actualWidth, actualHeight);
 
     $.fn.tooltip.Constructor.prototype.applyPlacement.call({
