@@ -44,6 +44,9 @@ Package.on_use(function (api) {
         'inputs/datetime/datetime.html',
         'inputs/datetime/datetime.js',
 
+        'inputs/checklist/checklist.html',
+        'inputs/checklist/checklist.js',
+
         'inputs/textarea/textarea.html',
         'inputs/textarea/textarea.js'
     ], 'client');

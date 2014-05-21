@@ -238,7 +238,7 @@ function generateSettings (settings) {
         value: null,
         position: 'left',
         title: null,
-        placeholder: null,
+        placeholder: null
     }, settings);
 }
 

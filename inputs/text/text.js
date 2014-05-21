@@ -15,7 +15,10 @@ _.each(types, function (t) {
         type: t,
         template: Template.m_editable_form_text,
         getVal: function ($inputWrapper) {
-            return $inputWrapper.find('input').val();
+            if (t === 'number')
+                return Number($inputWrapper.find('input').val());
+            else
+                return $inputWrapper.find('input').val();
         }
     });
 });
