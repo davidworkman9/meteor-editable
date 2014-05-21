@@ -1,5 +1,6 @@
 mEditable.addType({
     type: 'textarea',
+    classes: ['editable-pre-wrapped'],
     template: Template.m_editable_form_textarea,
     getVal: function ($inputWrapper) {
         return $inputWrapper.find('textarea').val();

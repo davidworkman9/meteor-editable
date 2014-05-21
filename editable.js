@@ -21,6 +21,7 @@ mEditable = {
                 check(t, String);
                 return t !== '';
             }),
+            classes: Match.Optional([String]),
             getVal: Function,
             template: Match.Where(function (t) {
                 return typeof t === 'object';
@@ -51,6 +52,12 @@ m_editable.helpers({
         return Session.get('m_editable.resetForm');
     },
     'value':         function () { return valueToText(this.value, this.source) || this.emptyText; },
+    'extraClasses': function () {
+        var type = mEditable._types.findOne({ _id: this.type });
+        if (type && type.classes) {
+            return type.classes.join(' ');
+        }
+    },
     'editableEmpty': function () {
         var v = valueToText(this.value, this.source);
         if (typeof this.display === 'function') {
