@@ -66,7 +66,7 @@ m_editable.helpers({
         if (typeof this.display === 'function') {
             v = this.display(v, this.value);
         }
-        return !v.trim() ? 'editable-empty' : '';
+        return !v.toString().trim() ? 'editable-empty' : '';
     },
     'inputTemplate': function () { return mEditable.getTemplate(this.type); }
 //     can't get tmpl in this context else I'd do this:
@@ -211,7 +211,8 @@ Meteor.startup(function () {
 function valueToText(val, source) {
     val = val || '';
     val = _.isArray(val) ? val : [val];
-
+    if (typeof val[0] === 'undefined')
+        val[0] = '';
     if (source && source.length) {
         return _.map(val, function (v, i) {
             _.each(source, function (s) {
