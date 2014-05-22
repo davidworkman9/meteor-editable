@@ -229,6 +229,9 @@ function generateSettings (settings) {
         delete settings.position;
     if (!mEditable._types.findOne({_id: settings.type }))
         delete settings.type;
+
+    if (settings.source)
+        settings.source = _.map(settings.source, function (op) { return typeof op === 'object' ? op : { value: op, text: op }; });
     return _.extend({
         type: 'text',
         emptyText: 'Empty',

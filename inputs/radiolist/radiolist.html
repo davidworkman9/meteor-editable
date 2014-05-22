@@ -1,0 +1,9 @@
+<template name="m_editable_form_radiolist">
+    <div>
+        {{#with generateName}}
+            {{#each source}}
+                <div><label><input type="radio" value="{{value}}" name="{{../_radioListName}}" checked="{{valueChecked ../value}}"><span> {{text}}</span></label></div>
+            {{/each}}
+        {{/with}}
+    </div>
+</template>

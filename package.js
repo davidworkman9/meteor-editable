@@ -17,7 +17,9 @@ Package.on_use(function (api) {
         'lib/select2/select2.css',
 
         'lib/bootstrap-datetimepicker/bootstrap-datetimepicker.css',
-        'lib/bootstrap-datetimepicker/bootstrap-datetimepicker.js'
+        'lib/bootstrap-datetimepicker/bootstrap-datetimepicker.js',
+
+        'lib/combodate/combodate.js'
     ], 'client');
 
     // main files
@@ -46,6 +48,12 @@ Package.on_use(function (api) {
 
         'inputs/checklist/checklist.html',
         'inputs/checklist/checklist.js',
+
+        'inputs/radiolist/radiolist.html',
+        'inputs/radiolist/radiolist.js',
+
+        'inputs/combodate/combodate.html',
+        'inputs/combodate/combodate.js',
 
         'inputs/textarea/textarea.html',
         'inputs/textarea/textarea.js'
