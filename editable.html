@@ -8,8 +8,21 @@
     <a href="#" class="editable editable-click {{editableEmpty}} {{extraClasses}}">{{displayVal}}</a>
 </template>
 
+<template name="m_editable_handle_disabled">
+    <span>{{displayVal}}</span>
+</template>
+
+
 <template name="m_editable_main">
-    {{> m_editable_template template=template displayVal=displayVal editableEmpty=editableEmpty handle=handle extraClasses=extraClasses }}
+    {{> m_editable_template
+        template=template
+        disabledTemplate=disabledTemplate
+        disabled=disabled
+        displayVal=displayVal
+        editableEmpty=editableEmpty
+        handle=handle
+        extraClasses=extraClasses
+    }}
     <div class="popover {{position}} editable-popup m_editable-popup editable-container">
         <div class="arrow"></div>
         {{#if title}}

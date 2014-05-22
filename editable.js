@@ -39,13 +39,16 @@ Template.m_editable.helpers({ 'settings': function () { return generateSettings(
 
 m_editable.helpers({
     'm_editable_template': function () {
-        return this.template || Template.m_editable_handle_atag;
+        return this.disabled ? this.disabledTemplate : this.template;
     },
     'displayVal': function () {
         var v = valueToText(this.value, this.source) || this.emptyText;
         if (typeof this.display === 'function') {
             return this.display(v, this.value) || this.emptyText;
         }
+
+        if (this.disabled)
+            return v;
         return v || this.emptyText;
     },
     'resetForm': function () {
@@ -233,6 +236,8 @@ function generateSettings (settings) {
     if (settings.source)
         settings.source = _.map(settings.source, function (op) { return typeof op === 'object' ? op : { value: op, text: op }; });
     return _.extend({
+        template: Template.m_editable_handle_atag,
+        disabledTemplate: Template.m_editable_handle_disabled,
         type: 'text',
         emptyText: 'Empty',
         async: false,
