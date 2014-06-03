@@ -39,7 +39,8 @@ Template.m_editable.helpers({ 'settings': function () { return generateSettings(
 
 m_editable.helpers({
     'm_editable_template': function () {
-        return this.disabled ? this.disabledTemplate : this.template;
+        var template = typeof this.template === 'string' ? Template[this.template] : this.template;
+        return this.disabled ? this.disabledTemplate : template;
     },
     'displayVal': function () {
         var v = valueToText(this.value, this.source) || this.emptyText;
