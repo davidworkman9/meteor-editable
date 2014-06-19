@@ -58,4 +58,6 @@ Package.on_use(function (api) {
         'inputs/textarea/textarea.html',
         'inputs/textarea/textarea.js'
     ], 'client');
+
+    api.export('mEditable');
 });
