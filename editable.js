@@ -85,16 +85,16 @@ m_editable.events({
 
         var val = mEditable.getVal(this.type)(tmpl.$('.editable-input'));
 
-        if (typeof self.onsubmit === 'function') {
+        if (typeof self.onSubmit === 'function') {
             if (self.async) {
                 tmpl.Session.set('loading', true);
-                this.onsubmit.call(this, val, function () {
+                this.onSubmit.call(this, val, function () {
                     tmpl.$('.m_editable-popup').trigger('hide');
                     doSavedTransition(tmpl);
                 });
                 return;
             }
-            this.onsubmit.call(this, val);
+            this.onSubmit.call(this, val);
         } else {
             tmpl.$('.editable-click').text(val);
         }
@@ -191,6 +191,7 @@ function resizePopover ($popover, placement) {
 
     $.fn.tooltip.Constructor.prototype.applyPlacement.call({
         tip: function () { return $popover; },
+        getViewportAdjustedDelta: function () { return { top: 0, left: 0 }; },
         replaceArrow: function (delta, dimension, position) { $popover.find('.arrow').css(position, delta ? (50 * (1 - delta / dimension) + '%') : ''); }
     }, calculatedOffset, placement);
 }
@@ -244,7 +245,7 @@ function generateSettings (settings) {
         emptyText: 'Empty',
         async: false,
         showbuttons: true,
-        onsubmit: null,
+        onSubmit: null,
         value: null,
         position: 'left',
         title: null,
@@ -261,8 +262,8 @@ function doSavedTransition (tmpl) {
         if(bgColor === 'transparent') {
             bgColor = '';
         }
-        $e.css('background-color', bgColor);
         $e.addClass('editable-bg-transition');
+        $e.css('background-color', bgColor);
         setTimeout(function(){
             $e.removeClass('editable-bg-transition');
         }, 1700);
