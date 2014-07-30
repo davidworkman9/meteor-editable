@@ -28,7 +28,7 @@ mEditable = {
             })
         });
         // store only the template name
-        type.template = type.template.kind.replace(/^Template_/, '');
+        type.template = type.template.__templateName;
         return this._types.insert(type);
     }
 };
