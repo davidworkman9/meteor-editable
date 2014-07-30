@@ -249,6 +249,8 @@ function generateSettings (settings) {
         type: 'text',
         emptyText: 'Empty',
         async: false,
+        select2: {},
+        combodate: {},
         showbuttons: true,
         onsubmit: null,
         value: null,
