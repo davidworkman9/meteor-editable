@@ -27,8 +27,14 @@ mEditable = {
                 return typeof t === 'object';
             })
         });
+        
         // store only the template name
-        type.template = type.template.kind.replace(/^Template_/, '');
+        if (!type.template.kind) {
+            type.template = type.template.__templateName;
+        } else {
+            type.template = type.template.kind.replace(/^Template_/, '');
+        }
+        
         return this._types.insert(type);
     }
 };
