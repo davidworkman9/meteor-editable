@@ -53,10 +53,23 @@ function convertSource (src) {
             return s;
         }
 
-        return {
-            id: s.value,
-            text: s.text
-        };
+        if (s.children) {
+            return {
+                text: s.text,
+                children: _.map(s.children, function (s) {
+                    return {
+                        id: s.value,
+                        text: s.text
+                    };
+                })
+            };
+        } else {
+            return {
+                id: s.value,
+                text: s.text
+            };
+        }
+
     });
 }
 
