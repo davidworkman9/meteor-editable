@@ -223,7 +223,13 @@ function valueToText(val, source) {
     if (source && source.length) {
         return _.map(val, function (v, i) {
             _.each(source, function (s) {
-                if (v.toString() === s.value.toString()) {
+                if (s.children) {
+                    _.each(s.children, function (s) {
+                        if (v.toString() === s.value.toString()) {
+                            v = s.text;
+                        }
+                    });
+                } else if (v.toString() === s.value.toString()) {
                     v = s.text;
                 }
             });
