@@ -1,6 +1,6 @@
 Package.describe({
     summary: "Meteor-Editable - in-place edit package influenced by x-editable",
-    version: "0.1.0",
+    version: "0.1.1",
     git: "https://github.com/davidworkman9/meteor-editable.git",
     name: "workman:meteor-editable"
 });
