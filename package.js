@@ -1,5 +1,8 @@
 Package.describe({
-    summary: "Meteor-Editable - in-place edit package influenced by x-editable"
+    summary: "Meteor-Editable - in-place edit package influenced by x-editable",
+    version: "0.1.1",
+    git: "https://github.com/davidworkman9/meteor-editable.git",
+    name: "workman:meteor-editable"
 });
 
 Package.on_use(function (api) {
@@ -9,6 +12,10 @@ Package.on_use(function (api) {
         'templating',
         'underscore'
     ], 'client');
+
+    if(api.versionsFrom) {
+        api.versionsFrom('METEOR@0.9.0');
+    }
 
     // libs
     api.add_files([
@@ -61,4 +68,6 @@ Package.on_use(function (api) {
         'inputs/textarea/textarea.html',
         'inputs/textarea/textarea.js'
     ], 'client');
+
+    api.export('mEditable');
 });

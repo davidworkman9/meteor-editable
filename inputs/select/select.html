@@ -1,7 +1,15 @@
 <template name="m_editable_form_select">
     <select class="form-control" value="{{value}}">
         {{#each source}}
-            <option value="{{value}}" selected="{{selectedVal ../value}}">{{text}}</option>
+            {{#if children}}
+                <optgroup label="{{text}}">
+                    {{#each children}}
+                        <option value="{{value}}" selected="{{selectedVal ../../value}}">{{text}}</option>
+                    {{/each}}
+                </optgroup>
+            {{else}}
+                <option value="{{value}}" selected="{{selectedVal ../value}}">{{text}}</option>
+            {{/if}}
         {{/each}}
     </select>
 </template>

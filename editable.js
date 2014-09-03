@@ -27,8 +27,14 @@ mEditable = {
                 return typeof t === 'object';
             })
         });
+        
         // store only the template name
-        type.template = type.template.kind.replace(/^Template_/, '');
+        if (!type.template.kind) {
+            type.template = type.template.__templateName;
+        } else {
+            type.template = type.template.kind.replace(/^Template_/, '');
+        }
+        
         return this._types.insert(type);
     }
 };
@@ -218,7 +224,13 @@ function valueToText(val, source) {
     if (source && source.length) {
         return _.map(val, function (v, i) {
             _.each(source, function (s) {
-                if (v.toString() === s.value.toString()) {
+                if (s.children) {
+                    _.each(s.children, function (s) {
+                        if (v.toString() === s.value.toString()) {
+                            v = s.text;
+                        }
+                    });
+                } else if (v.toString() === s.value.toString()) {
                     v = s.text;
                 }
             });
@@ -244,6 +256,8 @@ function generateSettings (settings) {
         type: 'text',
         emptyText: 'Empty',
         async: false,
+        select2: {},
+        combodate: {},
         showbuttons: true,
         onSubmit: null,
         value: null,
