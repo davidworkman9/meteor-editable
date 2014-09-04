@@ -3,7 +3,7 @@
     "description": "in-place edit package influenced by x-editable",
     "homepage": "http://meteor-editable.meteor.com/",
     "author": "Dave Workman <davidworkman9@gmail.com>",
-    "version": "0.1.1",
+    "version": "0.1.2",
     "git": "https://github.com/davidworkman9/meteor-editable.git",
     "packages": { }
 }
