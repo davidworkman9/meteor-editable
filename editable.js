@@ -1,10 +1,10 @@
 mEditable = {
-    _types: new Meteor.Collection(null),
+    _types: new Mongo.Collection(null),
     getTemplate: function (type) {
         var t = this._types.findOne({_id: type });
         if (!t)
             throw new Meteor.Error(500, 'Editable type ' + type + ' is not defined.');
-        return Template[t.template];
+        return Template[t.template] || null;
     },
     getVal: function (type) {
         return this._types.findOne({_id: type }).getVal;
@@ -29,7 +29,9 @@ mEditable = {
         });
         
         // store only the template name
-        if (!type.template.kind) {
+        if (type.template.viewName) {
+            type.template = type.template.viewName.replace(/Template\./, '');
+        } else if (!type.template.kind) {
             type.template = type.template.__templateName;
         } else {
             type.template = type.template.kind.replace(/^Template_/, '');

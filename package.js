@@ -9,6 +9,8 @@ Package.on_use(function (api) {
     var fs = Npm.require('fs');
     api.use([
         'check',
+        'mongo',
+        'meteor-platform',
         'templating',
         'underscore'
     ], 'client');
