@@ -16,7 +16,7 @@ Package.on_use(function (api) {
     ], 'client');
 
     if(api.versionsFrom) {
-        api.versionsFrom('METEOR@0.9.0');
+        api.versionsFrom('METEOR@0.9.1');
     }
 
     // libs
