@@ -56,7 +56,8 @@
 </template>
 
 <template name="m_editable_main">
-    {{> m_editable_template
+    <span class="editable-container">
+        {{> m_editable_template
         template=template
         disabledTemplate=disabledTemplate
         disabled=disabled
@@ -64,9 +65,10 @@
         editableEmpty=editableEmpty
         handle=handle
         extraClasses=extraClasses
-    }}
-    <input type="hidden" class="editable-id" value="{{editableId}}" />
-    {{#unless appendToBody}}
-        {{>m_editable_popover}}
-    {{/unless}}
+        }}
+        <input type="hidden" class="editable-id" value="{{editableId}}" />
+        {{#unless appendToBody}}
+            {{>m_editable_popover}}
+        {{/unless}}
+    </span>
 </template>
