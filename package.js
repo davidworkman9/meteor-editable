@@ -33,6 +33,9 @@ Package.on_use(function (api) {
 
     // main files
     api.add_files([
+        'img/loading.gif',
+        'img/clear.png',
+
         'bootstrap-editable.css',
         'editable.html',
         'editable.js'

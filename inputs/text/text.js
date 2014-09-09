@@ -23,9 +23,21 @@ _.each(types, function (t) {
     });
 });
 
+Template.m_editable_form_text.rendered = function() {
+    this.$('.editable-clear-x').toggle(!!this.data.value);
+};
+
 Template.m_editable_form_text.events({
     'input input[type="range"]': function (e, tmpl) {
         tmpl.$('.output').text(tmpl.$(e.target).val());
+    },
+    'click .editable-clear-x': function (e, tmpl) {
+        tmpl.$('input').val('');
+        tmpl.$('.editable-clear-x').hide();
+    },
+    'keyup input, change input': function (e, tmpl) {
+        var value = tmpl.$('input').val();
+        tmpl.$('.editable-clear-x').toggle(!!value);
     }
 });
 Template.m_editable_form_text.helpers({
