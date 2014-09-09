@@ -46,6 +46,12 @@ var POSSIBLE_POSITIONS = ['left', 'right', 'top', 'bottom'];
 Template.m_editable.helpers({ 'settings': function () { return generateSettings(this); } });
 
 m_editable.helpers({
+    'editableId': function () {
+        var tmpl = Template.instance();
+        if (!tmpl.view.editableId)
+            tmpl.view.editableId = Random.id();
+        return tmpl.view.editableId;
+    },
     'm_editable_template': function () {
         var template = typeof this.template === 'string' ? Template[this.template] : this.template;
         return this.disabled ? this.disabledTemplate : template;
@@ -59,9 +65,6 @@ m_editable.helpers({
         if (this.disabled)
             return v;
         return v || this.emptyText;
-    },
-    'resetForm': function () {
-        return Session.get('m_editable.resetForm');
     },
     'value':         function () { return valueToText(this.value, this.source) || this.emptyText; },
     'extraClasses': function () {
@@ -77,27 +80,49 @@ m_editable.helpers({
         }
         return !v.toString().trim() ? 'editable-empty' : '';
     },
+    //'loading': function (a,b) {
+    //    return Template.instance().Session.get('loading');
+    //}
+});
+
+Template.m_editable_popover.helpers({
+    'resetForm': function () {
+        return Session.get('m_editable.resetForm');
+    },
     'inputTemplate': function () { return mEditable.getTemplate(this.type); }
-//     can't get tmpl in this context else I'd do this:
-//    'loading': function (a,b) {
-//        return tmpl.Session.get('loading');
-//    }
 });
 
 m_editable.events({
     'resize .editable-container': function (e, tmpl) {
-        resizePopover(tmpl.$('.m_editable-popup'), this.position);
+        resizePopover(tmpl.getPopover(), this.position);
     },
-    'submit': function (e, tmpl) {
-        var self = this;
+    'click .editable-cancel': function (e, tmpl) {
+        tmpl.getPopover().trigger('hide');
+    },
+    'click .editable-click': function (e, tmpl) {
+        tmpl.getPopover().trigger(!tmpl.Session.get('popover-visible') ? 'show' : 'hide');
+    }
+});
 
-        var val = mEditable.getVal(this.type)(tmpl.$('.editable-input'));
+function getMainTemplateInstance (tmpl) {
+    var id = tmpl.$('.popover').parent().data('id');
+    if (!id)
+        id = tmpl.$('.popover').parent().find('input.editable-id').val();
+    return Blaze.getView($('input.editable-id[value="' + id + '"]')[0]).templateInstance();
+}
+
+Template.m_editable_popover.events({
+    'submit .editableform': function (e, popoverTmpl) {
+        e.preventDefault();
+        var tmpl = getMainTemplateInstance(popoverTmpl),
+            self = this,
+            val = mEditable.getVal(self.type)(popoverTmpl.$('.editable-input'));
 
         if (typeof self.onsubmit === 'function') {
             if (self.async) {
                 tmpl.Session.set('loading', true);
                 this.onsubmit.call(this, val, function () {
-                    tmpl.$('.m_editable-popup').trigger('hide');
+                    tmpl.getPopover().trigger('hide');
                     doSavedTransition(tmpl);
                 });
                 return;
@@ -106,19 +131,11 @@ m_editable.events({
         } else {
             tmpl.$('.editable-click').text(val);
         }
-        tmpl.$('.m_editable-popup').trigger('hide');
+        tmpl.getPopover().trigger('hide');
         doSavedTransition(tmpl);
     },
-    'click .editable-cancel': function (e, tmpl) {
-        tmpl.$('.m_editable-popup').trigger('hide');
-    },
-    'submit .editableform': function (e) {
-        e.preventDefault();
-    },
-    'click .editable-click': function (e, tmpl) {
-        tmpl.$('.m_editable-popup').trigger(!tmpl.Session.get('popover-visible') ? 'show' : 'hide');
-    },
     'hidden .m_editable-popup': function (e, tmpl) {
+        tmpl = getMainTemplateInstance(tmpl);
         tmpl.Session.set('loading', false);
 
         // hack to reset form
@@ -128,9 +145,11 @@ m_editable.events({
         }, 10);
     },
     'shown .m_editable-popup': function (e, tmpl) {
+        tmpl = getMainTemplateInstance(tmpl);
         tmpl.$('.editable-focus').first().focus();
     },
     'hide .m_editable-popup': function (e, tmpl) {
+        tmpl = getMainTemplateInstance(tmpl);
         if (tmpl.Session.equals('popover-visible', false)) {
             e.stopImmediatePropagation();
             return;
@@ -143,6 +162,7 @@ m_editable.events({
         }, 325); // 325 seems to be the magic number (for my desktop at least) so the user doesn't see the form show up again
     },
     'show .m_editable-popup': function (e, tmpl) {
+        tmpl = getMainTemplateInstance(tmpl);
         if (tmpl.Session.equals('popover-visible', true)) {
             e.stopImmediatePropagation();
             return;
@@ -157,6 +177,28 @@ m_editable.events({
 m_editable.rendered = function () {
     var self = this;
     var $popover = self.$('.m_editable-popup');
+    var $bodyEditables = $('#body-editables');
+    if ($bodyEditables.length === 0) {
+        $('body').append('<div id="body-editables"></div>');
+        $bodyEditables = $('#body-editables');
+    }
+
+    self.getPopover = function () {
+        if (this.data.appendToBody)
+            return $('#body-editables').find('[data-id="' + this.view.editableId+ '"]').find('.m_editable-popup');
+        return this.$('.m_editable-popup');
+    };
+
+    self.Deps.autorun(function () {
+        var data = Template.currentData(self.view);
+        if (data.appendToBody && $bodyEditables.find('[data-id="' + self.view.editableId + '"]').length === 0) {
+            $bodyEditables.append('<div data-id="' + self.view.editableId + '"></div>');
+            Blaze.renderWithData(Template.m_editable_popover, data, $('#body-editables').find('[data-id="' + self.view.editableId + '"]')[0]);
+            $popover = $('#body-editables').find('[data-id="' + self.view.editableId + '"]').find('.m_editable-popup');
+        } else {
+            $('#body-editables').find('[data-id="' + self.view.editableId + '"]').remove();
+        }
+    });
 
     self.Deps.autorun(function () {
         var loading = self.Session.get('loading');
@@ -183,7 +225,7 @@ m_editable.rendered = function () {
         if (visible) {
             $popover.trigger('show');
             $popover.fadeIn();
-            resizePopover($popover, self.data.position);
+            resizePopover(self.getPopover(), self.data.position);
         } else {
             $popover.trigger('hide');
             $popover.fadeOut();
@@ -192,9 +234,12 @@ m_editable.rendered = function () {
 };
 
 function resizePopover ($popover, placement) {
+    var editableClick = $popover.prevAll('.editable-click:first');
+    if (editableClick.length === 0)
+        editableClick = $('input.editable-id[value="' + $popover.parent().data('id') + '"]').siblings('.editable-click:first');
     var actualWidth = $popover[0].offsetWidth,
         actualHeight = $popover[0].offsetHeight,
-        pos = $.fn.tooltip.Constructor.prototype.getPosition.call({ $element: $popover.prevAll('.editable-click:first') });
+        pos = $.fn.tooltip.Constructor.prototype.getPosition.call({ $element: editableClick });
     var calculatedOffset = $.fn.tooltip.Constructor.prototype.getCalculatedOffset(placement, pos, actualWidth, actualHeight);
 
     $.fn.tooltip.Constructor.prototype.applyPlacement.call({
@@ -252,6 +297,7 @@ function generateSettings (settings) {
     if (settings.source)
         settings.source = _.map(settings.source, function (op) { return typeof op === 'object' ? op : { value: op, text: op }; });
     return _.extend({
+        appendToBody: false,
         template: Template.m_editable_handle_atag,
         disabledTemplate: Template.m_editable_handle_disabled,
         type: 'text',
