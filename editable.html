@@ -72,3 +72,17 @@
         {{/unless}}
     </span>
 </template>
+
+<body>
+    <div id="body-editables">
+        {{> m_editable_body_popovers}}
+    </div>
+</body>
+
+<template name="m_editable_body_popovers">
+    {{#each popovers}}
+        <div data-id="{{_id}}">
+            {{> m_editable_popover data}}
+        </div>
+    {{/each}}
+</template>

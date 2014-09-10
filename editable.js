@@ -174,6 +174,13 @@ Template.m_editable_popover.events({
     }
 });
 
+var bodyPopovers = new Mongo.Collection(null);
+Template.m_editable_body_popovers.helpers({
+    'popovers': function () {
+        return bodyPopovers.find();
+    }
+});
+
 m_editable.rendered = function () {
     var self = this;
     var $popover = self.$('.m_editable-popup');
@@ -185,18 +192,16 @@ m_editable.rendered = function () {
 
     self.getPopover = function () {
         if (this.data.appendToBody)
-            return $('#body-editables').find('[data-id="' + this.view.editableId+ '"]').find('.m_editable-popup');
+            return $('#body-editables').find('[data-id="' + this.view.editableId + '"]').find('.m_editable-popup');
         return this.$('.m_editable-popup');
     };
 
     self.Deps.autorun(function () {
         var data = Template.currentData(self.view);
-        if (data.appendToBody && $bodyEditables.find('[data-id="' + self.view.editableId + '"]').length === 0) {
-            $bodyEditables.append('<div data-id="' + self.view.editableId + '"></div>');
-            Blaze.renderWithData(Template.m_editable_popover, data, $('#body-editables').find('[data-id="' + self.view.editableId + '"]')[0]);
-            $popover = $('#body-editables').find('[data-id="' + self.view.editableId + '"]').find('.m_editable-popup');
+        if (data.appendToBody) {
+            bodyPopovers.upsert({ _id: self.view.editableId }, { _id: self.view.editableId, data: data });
         } else {
-            $('#body-editables').find('[data-id="' + self.view.editableId + '"]').remove();
+            bodyPopovers.remove({ _id: self.view.editableId });
         }
     });
 
@@ -217,6 +222,7 @@ m_editable.rendered = function () {
     self.Deps.autorun(function () {
         var visible = self.Session.get('popover-visible');
         self.Session.get('loading'); // changes the form size, so need to re-calculate location
+        $popover = self.getPopover();
         var settings = self.Session.get('settings');
         if (typeof visible === 'undefined') {
             return;
@@ -225,11 +231,12 @@ m_editable.rendered = function () {
         if (visible) {
             $popover.trigger('show');
             $popover.fadeIn();
-            resizePopover(self.getPopover(), self.data.position);
+            resizePopover($popover, self.data.position);
         } else {
             $popover.trigger('hide');
             $popover.fadeOut();
         }
+
     });
 };
 
@@ -241,7 +248,6 @@ function resizePopover ($popover, placement) {
         actualHeight = $popover[0].offsetHeight,
         pos = $.fn.tooltip.Constructor.prototype.getPosition.call({ $element: editableClick });
     var calculatedOffset = $.fn.tooltip.Constructor.prototype.getCalculatedOffset(placement, pos, actualWidth, actualHeight);
-
     $.fn.tooltip.Constructor.prototype.applyPlacement.call({
         tip: function () { return $popover; },
         replaceArrow: function (delta, dimension, position) { $popover.find('.arrow').css(position, delta ? (50 * (1 - delta / dimension) + '%') : ''); }
@@ -332,7 +338,7 @@ function doSavedTransition (tmpl) {
 }
 
 // Session & Deps stuff
-m_editable.destroyed = function () { this.Session.destroyAll(); this.Deps.stopAll(); };
+m_editable.destroyed = function () { this.Session.destroyAll(); this.Deps.stopAll(); bodyPopovers.remove({ _id: this.view.editableId }); };
 m_editable.created = function () {
     var self = this;
 
