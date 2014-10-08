@@ -96,9 +96,6 @@ m_editable.events({
     'resize .editable-container': function (e, tmpl) {
         resizePopover(tmpl.getPopover(), this.position);
     },
-    'click .editable-cancel': function (e, tmpl) {
-        tmpl.getPopover().trigger('hide');
-    },
     'click .editable-click': function (e, tmpl) {
         tmpl.getPopover().trigger(!tmpl.Session.get('popover-visible') ? 'show' : 'hide');
     }
@@ -112,6 +109,10 @@ function getMainTemplateInstance (tmpl) {
 }
 
 Template.m_editable_popover.events({
+    'click .editable-cancel': function (e, popoverTmpl) {
+        var tmpl = getMainTemplateInstance(popoverTmpl);
+        tmpl.getPopover().trigger('hide');
+    },
     'submit .editableform': function (e, popoverTmpl) {
         e.preventDefault();
         var tmpl = getMainTemplateInstance(popoverTmpl),
@@ -146,7 +147,6 @@ Template.m_editable_popover.events({
     },
     'shown .m_editable-popup': function (e, tmpl) {
         tmpl = getMainTemplateInstance(tmpl);
-        tmpl.$('.editable-focus').first().focus();
     },
     'hide .m_editable-popup': function (e, tmpl) {
         tmpl = getMainTemplateInstance(tmpl);
@@ -171,6 +171,9 @@ Template.m_editable_popover.events({
         setTimeout(function () {
             $(e.target).trigger('shown');
         }, 0);
+
+        Tracker.flush();
+        tmpl.getPopover().find('.editable-focus').first().focus();
     }
 });
 
@@ -254,19 +257,20 @@ function resizePopover ($popover, placement) {
     }, calculatedOffset, placement);
 }
 
-Meteor.startup(function () {
-    $(document).on('click.m_editable-popover-close', function (e) {
-        $('.m_editable-popup:visible').each(function () {
-            var $popover = $(this);
-            if (!$popover.is(e.target) &&
-                !$popover.siblings('.m_editable-popup-handle').is(e.target) &&
-                $popover.has(e.target).length === 0 &&
-                $popover.siblings('.m_editable-popup-handle').has(e.target).length === 0) {
-                $popover.trigger('hide');
-            }
-        });
-    });
-});
+// remove this for now, latest version of x-editable no longer closes when you click outside either.
+//Meteor.startup(function () {
+//    $(document).on('click.m_editable-popover-close', function (e) {
+//        $('.m_editable-popup:visible').each(function () {
+//            var $popover = $(this);
+//            if (!$popover.is(e.target) &&
+//                !$popover.siblings('.m_editable-popup-handle').is(e.target) &&
+//                $popover.has(e.target).length === 0 &&
+//                $popover.siblings('.m_editable-popup-handle').has(e.target).length === 0) {
+//                $popover.trigger('hide');
+//            }
+//        });
+//    });
+//});
 
 function valueToText(val, source) {
     val = val || '';
