@@ -257,20 +257,23 @@ function resizePopover ($popover, placement) {
     }, calculatedOffset, placement);
 }
 
-// remove this for now, latest version of x-editable no longer closes when you click outside either.
-//Meteor.startup(function () {
-//    $(document).on('click.m_editable-popover-close', function (e) {
-//        $('.m_editable-popup:visible').each(function () {
-//            var $popover = $(this);
-//            if (!$popover.is(e.target) &&
-//                !$popover.siblings('.m_editable-popup-handle').is(e.target) &&
-//                $popover.has(e.target).length === 0 &&
-//                $popover.siblings('.m_editable-popup-handle').has(e.target).length === 0) {
-//                $popover.trigger('hide');
-//            }
-//        });
-//    });
-//});
+Meteor.startup(function () {
+    $(document).on('click.m_editable-popover-close', function (e) {
+        $('.m_editable-popup:visible').each(function () {
+            var $click, $popover = $(this), id = $popover.parent().data('id');
+            $click = id ? $('input[value="' + id + '"]').siblings('.editable-click') :
+                $popover.siblings('.editable-click');
+
+            if ($popover.is(e.target) ||
+                $popover.has(e.target).length > 0 ||
+                $click.is(e.target) ||
+                $click.has(e.target).length > 0)
+                return;
+
+            $popover.trigger('hide');
+        });
+    });
+});
 
 function valueToText(val, source) {
     val = val || '';
