@@ -251,10 +251,10 @@ function resizePopover ($popover, placement) {
         actualHeight = $popover[0].offsetHeight,
         pos = $.fn.tooltip.Constructor.prototype.getPosition.call({ $element: editableClick });
     var calculatedOffset = $.fn.tooltip.Constructor.prototype.getCalculatedOffset(placement, pos, actualWidth, actualHeight);
-    $.fn.tooltip.Constructor.prototype.applyPlacement.call({
+    $.fn.tooltip.Constructor.prototype.applyPlacement.call(_.extend($.fn.tooltip.Constructor.prototype, {
         tip: function () { return $popover; },
         replaceArrow: function (delta, dimension, position) { $popover.find('.arrow').css(position, delta ? (50 * (1 - delta / dimension) + '%') : ''); }
-    }, calculatedOffset, placement);
+    }), calculatedOffset, placement);
 }
 
 Meteor.startup(function () {
