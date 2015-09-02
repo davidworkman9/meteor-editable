@@ -1,6 +1,6 @@
 Package.describe({
     summary: "Meteor-Editable - in-place edit package influenced by x-editable",
-    version: "0.1.8",
+    version: "0.1.9",
     git: "https://github.com/davidworkman9/meteor-editable.git",
     name: "workman:meteor-editable"
 });
@@ -16,13 +16,12 @@ Package.on_use(function (api) {
     ], 'client');
 
     if(api.versionsFrom) {
-        api.versionsFrom('METEOR@0.9.1');
+        api.versionsFrom('METEOR@1.2-rc.10');
     }
 
     // libs
-    api.add_files([
+    api.addFiles([
         'lib/select2/select2.js',
-        'lib/select2/select2.png',
         'lib/select2/select2.css',
 
         'lib/bootstrap-datetimepicker/bootstrap-datetimepicker.css',
@@ -31,15 +30,20 @@ Package.on_use(function (api) {
         'lib/combodate/combodate.js'
     ], 'client');
 
+    api.addFiles([
+        'lib/select2/select2.png',
+        'lib/select2/select2x2.png'
+    ], 'client', { isAsset: true });
+
     // main files
-    api.add_files([
+    api.addFiles([
         'bootstrap-editable.css',
         'editable.html',
         'editable.js'
     ], 'client');
 
     // input types
-    api.add_files([
+    api.addFiles([
         'inputs/text/text.html',
         'inputs/text/text.js',
 
