@@ -1,6 +1,6 @@
 Package.describe({
     summary: "Meteor-Editable - in-place edit package influenced by x-editable",
-    version: "0.1.9",
+    version: "0.1.10",
     git: "https://github.com/davidworkman9/meteor-editable.git",
     name: "workman:meteor-editable"
 });
@@ -16,7 +16,7 @@ Package.on_use(function (api) {
     ], 'client');
 
     if(api.versionsFrom) {
-        api.versionsFrom('METEOR@1.2-rc.10');
+        api.versionsFrom('METEOR@1.1.0.2');
     }
 
     // libs
