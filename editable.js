@@ -1,15 +1,26 @@
+const POSSIBLE_POSITIONS = ['left', 'right', 'top', 'bottom'];
+const bodyPopovers = new Mongo.Collection(null);
+
+Template.m_editable_main.onCreated(function() {
+    this.Session = new ReactiveDict();
+});
+
+Template.m_editable_main.onDestroyed(function () {
+    bodyPopovers.remove({ _id: this.view.editableId });
+});
+
 mEditable = {
     _types: new Mongo.Collection(null),
-    getTemplate: function (type) {
+    getTemplate (type) {
         var t = this._types.findOne({_id: type });
         if (!t)
             throw new Meteor.Error(500, 'Editable type ' + type + ' is not defined.');
         return Template[t.template] || null;
     },
-    getVal: function (type) {
+    getVal (type) {
         return this._types.findOne({_id: type }).getVal;
     },
-    addType: function (type) {
+    addType (type) {
         type._id = type.type;
         delete type.type;
 
@@ -41,22 +52,20 @@ mEditable = {
     }
 };
 
-var m_editable = Template['m_editable_main'];
-var POSSIBLE_POSITIONS = ['left', 'right', 'top', 'bottom'];
 Template.m_editable.helpers({ 'settings': function () { return generateSettings(this); } });
 
-m_editable.helpers({
-    'editableId': function () {
+Template.m_editable_main.helpers({
+    editableId () {
         var tmpl = Template.instance();
         if (!tmpl.view.editableId)
             tmpl.view.editableId = Random.id();
         return tmpl.view.editableId;
     },
-    'm_editable_template': function () {
+    m_editable_template () {
         var template = typeof this.template === 'string' ? Template[this.template] : this.template;
         return this.disabled ? this.disabledTemplate : template;
     },
-    'displayVal': function () {
+    displayVal () {
         var v = valueToText(this.value, this.source) || this.emptyText;
         if (typeof this.display === 'function') {
             return this.display(v, this.value) || this.emptyText;
@@ -66,14 +75,14 @@ m_editable.helpers({
             return v;
         return v || this.emptyText;
     },
-    'value':         function () { return valueToText(this.value, this.source) || this.emptyText; },
-    'extraClasses': function () {
+    value () { return valueToText(this.value, this.source) || this.emptyText; },
+    extraClasses () {
         var type = mEditable._types.findOne({ _id: this.type });
         if (type && type.classes) {
             return type.classes.join(' ');
         }
     },
-    'editableEmpty': function () {
+    editableEmpty () {
         var v = valueToText(this.value, this.source);
         if (typeof this.display === 'function') {
             v = this.display(v, this.value);
@@ -86,17 +95,18 @@ m_editable.helpers({
 });
 
 Template.m_editable_popover.helpers({
-    'resetForm': function () {
+    resetForm () {
+
         return Session.get('m_editable.resetForm');
     },
-    'inputTemplate': function () { return mEditable.getTemplate(this.type); }
+    inputTemplate () { return mEditable.getTemplate(this.type); }
 });
 
-m_editable.events({
-    'resize .editable-container': function (e, tmpl) {
+Template.m_editable_main.events({
+    'resize .editable-container' (e, tmpl) {
         resizePopover(tmpl.getPopover(), this.position);
     },
-    'click .editable-click': function (e, tmpl) {
+    'click .editable-click' (e, tmpl) {
         tmpl.getPopover().trigger(!tmpl.Session.get('popover-visible') ? 'show' : 'hide');
     }
 });
@@ -109,11 +119,11 @@ function getMainTemplateInstance (tmpl) {
 }
 
 Template.m_editable_popover.events({
-    'click .editable-cancel': function (e, popoverTmpl) {
+    'click .editable-cancel' (e, popoverTmpl) {
         var tmpl = getMainTemplateInstance(popoverTmpl);
         tmpl.getPopover().trigger('hide');
     },
-    'submit .editableform': function (e, popoverTmpl) {
+    'submit .editableform' (e, popoverTmpl) {
         e.preventDefault();
         var tmpl = getMainTemplateInstance(popoverTmpl),
             self = this,
@@ -122,7 +132,7 @@ Template.m_editable_popover.events({
         if (typeof self.onsubmit === 'function') {
             if (self.async) {
                 tmpl.Session.set('loading', true);
-                this.onsubmit.call(this, val, function () {
+                this.onsubmit.call(this, val, () => {
                     tmpl.getPopover().trigger('hide');
                     doSavedTransition(tmpl);
                 });
@@ -135,20 +145,20 @@ Template.m_editable_popover.events({
         tmpl.getPopover().trigger('hide');
         doSavedTransition(tmpl);
     },
-    'hidden .m_editable-popup': function (e, tmpl) {
+    'hidden .m_editable-popup' (e, tmpl) {
         tmpl = getMainTemplateInstance(tmpl);
         tmpl.Session.set('loading', false);
 
         // hack to reset form
         Session.set('m_editable.resetForm', true);
-        setTimeout(function () {
-            Session.set('m_editable.resetForm', false);
+        setTimeout(() => {
+           Session.set('m_editable.resetForm', false);
         }, 10);
     },
-    'shown .m_editable-popup': function (e, tmpl) {
+    'shown .m_editable-popup' (e, tmpl) {
         tmpl = getMainTemplateInstance(tmpl);
     },
-    'hide .m_editable-popup': function (e, tmpl) {
+    'hide .m_editable-popup' (e, tmpl) {
         tmpl = getMainTemplateInstance(tmpl);
         if (tmpl.Session.equals('popover-visible', false)) {
             e.stopImmediatePropagation();
@@ -161,7 +171,7 @@ Template.m_editable_popover.events({
             $(e.target).trigger('hidden');
         }, 325); // 325 seems to be the magic number (for my desktop at least) so the user doesn't see the form show up again
     },
-    'show .m_editable-popup': function (e, tmpl) {
+    'show .m_editable-popup' (e, tmpl) {
         tmpl = getMainTemplateInstance(tmpl);
         if (tmpl.Session.equals('popover-visible', true)) {
             e.stopImmediatePropagation();
@@ -177,56 +187,50 @@ Template.m_editable_popover.events({
     }
 });
 
-var bodyPopovers = new Mongo.Collection(null);
+
 Template.m_editable_body_popovers.helpers({
     'popovers': function () {
         return bodyPopovers.find();
     }
 });
 
-m_editable.rendered = function () {
-    var self = this;
-    var $popover = self.$('.m_editable-popup');
-    var $bodyEditables = $('#body-editables');
-    if ($bodyEditables.length === 0) {
-        $('body').append('<div id="body-editables"></div>');
-        $bodyEditables = $('#body-editables');
-    }
-
-    self.getPopover = function () {
+Template.m_editable_main.onRendered(function() {
+    var $popover = this.$('.m_editable-popup');
+    
+    this.getPopover = () => {
         if (this.data.appendToBody)
             return $('#body-editables').find('[data-id="' + this.view.editableId + '"]').find('.m_editable-popup');
         return this.$('.m_editable-popup');
     };
 
-    self.Deps.autorun(function () {
-        var data = Template.currentData(self.view);
+    this.autorun(() => {
+        var data = Template.currentData(this.view);
         if (data.appendToBody) {
-            bodyPopovers.upsert({ _id: self.view.editableId }, { _id: self.view.editableId, data: data });
+            bodyPopovers.upsert({ _id: this.view.editableId }, { _id: this.view.editableId, data: data });
         } else {
-            bodyPopovers.remove({ _id: self.view.editableId });
+            bodyPopovers.remove({ _id: this.view.editableId });
         }
     });
 
-    self.Deps.autorun(function () {
-        var loading = self.Session.get('loading');
+    this.autorun(() => {
+        var loading = this.Session.get('loading');
         if (typeof loading === 'undefined')
             return;
 
         if (loading) {
-            self.$('.editableform').hide();
-            self.$('.editableform-loading').show();
+            this.$('.editableform').hide();
+            this.$('.editableform-loading').show();
         } else {
-            self.$('.editableform-loading').hide();
-            self.$('.editableform').show();
+            this.$('.editableform-loading').hide();
+            this.$('.editableform').show();
         }
     });
 
-    self.Deps.autorun(function () {
-        var visible = self.Session.get('popover-visible');
-        self.Session.get('loading'); // changes the form size, so need to re-calculate location
-        $popover = self.getPopover();
-        var settings = self.Session.get('settings');
+    this.autorun(() => {
+        var visible = this.Session.get('popover-visible');
+        this.Session.get('loading'); // changes the form size, so need to re-calculate location
+        $popover = this.getPopover();
+        var settings = this.Session.get('settings');
         if (typeof visible === 'undefined') {
             return;
         }
@@ -234,31 +238,34 @@ m_editable.rendered = function () {
         if (visible) {
             $popover.trigger('show');
             $popover.fadeIn();
-            resizePopover($popover, self.data.position);
+            resizePopover($popover, this.data.position);
         } else {
             $popover.trigger('hide');
             $popover.fadeOut();
         }
 
     });
-};
+});
 
 function resizePopover ($popover, placement) {
-    var editableClick = $popover.prevAll('.editable-click:first');
+    let editableClick = $popover.prevAll('.editable-click:first');
     if (editableClick.length === 0)
         editableClick = $('input.editable-id[value="' + $popover.parent().data('id') + '"]').siblings('.editable-click:first');
-    var actualWidth = $popover[0].offsetWidth,
+    
+    const actualWidth = $popover[0].offsetWidth,
         actualHeight = $popover[0].offsetHeight,
         pos = $.fn.tooltip.Constructor.prototype.getPosition.call({ $element: editableClick });
-    var calculatedOffset = $.fn.tooltip.Constructor.prototype.getCalculatedOffset(placement, pos, actualWidth, actualHeight);
-    $.fn.tooltip.Constructor.prototype.applyPlacement.call(_.extend($.fn.tooltip.Constructor.prototype, {
-        tip: function () { return $popover; },
-        replaceArrow: function (delta, dimension, position) { $popover.find('.arrow').css(position, delta ? (50 * (1 - delta / dimension) + '%') : ''); }
-    }), calculatedOffset, placement);
+    const calculatedOffset = $.fn.tooltip.Constructor.prototype.getCalculatedOffset(placement, pos, actualWidth, actualHeight);
+
+    $.fn.tooltip.Constructor.prototype.applyPlacement.call(
+        _.extend($.fn.tooltip.Constructor.prototype, {
+            tip: () => $popover,
+            replaceArrow: () => {}
+        }), calculatedOffset, placement);
 }
 
-Meteor.startup(function () {
-    $(document).on('click.m_editable-popover-close', function (e) {
+Meteor.startup(() => {
+    $(document).on('click.m_editable-popover-close', (e) => {
         $('.m_editable-popup:visible').each(function () {
             var $click, $popover = $(this), id = $popover.parent().data('id');
             $click = id ? $('input[value="' + id + '"]').siblings('.editable-click') :
@@ -281,10 +288,10 @@ function valueToText(val, source) {
     if (typeof val[0] === 'undefined')
         val[0] = '';
     if (source && source.length) {
-        return _.map(val, function (v, i) {
-            _.each(source, function (s) {
+        return _.map(val, (v, i) => {
+            _.each(source, (s) => {
                 if (s.children) {
-                    _.each(s.children, function (s) {
+                    _.each(s.children, (s) => {
                         if (v.toString() === s.value.toString()) {
                             v = s.text;
                         }
@@ -308,7 +315,8 @@ function generateSettings (settings) {
         delete settings.type;
 
     if (settings.source)
-        settings.source = _.map(settings.source, function (op) { return typeof op === 'object' ? op : { value: op, text: op }; });
+        settings.source = _.map(settings.source, op => (typeof op === 'object' ? op : { value: op, text: op }));
+
     return _.extend({
         appendToBody: false,
         template: Template.m_editable_handle_atag,
@@ -319,7 +327,6 @@ function generateSettings (settings) {
         select2: {},
         combodate: {},
         showbuttons: true,
-        onsubmit: null,
         value: null,
         position: 'left',
         title: null,
@@ -332,42 +339,14 @@ function doSavedTransition (tmpl) {
         bgColor = $e.css('background-color');
 
     $e.css('background-color', '#FFFF80');
-    setTimeout(function(){
+    setTimeout(() => {
         if(bgColor === 'transparent') {
             bgColor = '';
         }
         $e.css('background-color', bgColor);
         $e.addClass('editable-bg-transition');
-        setTimeout(function(){
+        setTimeout(() =>{
             $e.removeClass('editable-bg-transition');
         }, 1700);
     }, 10);
 }
-
-// Session & Deps stuff
-m_editable.destroyed = function () { this.Session.destroyAll(); this.Deps.stopAll(); bodyPopovers.remove({ _id: this.view.editableId }); };
-m_editable.created = function () {
-    var self = this;
-
-    self.Deps = {
-        _handles: [],
-        stopAll: function () { _.each(this._handles, function (d) { d.stop(); }); },
-        autorun: function (f) { this._handles.push(Deps.autorun(f)); }
-    };
-
-    self._sessId = Random.id();
-    self.Session = {
-        destroyAll: function () {
-            _.each(Object.keys(Session.keys), function (key) {
-                var sessCheck = new RegExp('-' + self._sessId + '$');
-                if(sessCheck.test(key)) {
-                    Session.set([key]);
-                    delete Session.keys[key];
-                }
-            });
-        },
-        set: function (key, val) { return Session.set(key + '-' + self._sessId, val); },
-        get: function (key) { return Session.get(key + '-' + self._sessId); },
-        equals: function (key, val) { return Session.equals(key + '-' + self._sessId, val); }
-    };
-};
